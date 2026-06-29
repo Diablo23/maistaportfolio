@@ -35,20 +35,20 @@
     { src: "assets/videos/reel-8.mp4", tag: "REEL 08" },
   ];
 
-  /* scattered target rects (% of stage) — chaotic collage, 3 / 2 / 3 rows.
-     Bottom row kept clear of the viewport edge so it isn't clipped. */
+  /* scattered target rects (% of stage) — 4 × 2, spaced so none overlap
+     (with a little vertical jitter + tilt for a lively collage). */
   const SCATTER = [
-    { l: 2,  t: 5,  w: 28, h: 30 },   // top-left
-    { l: 36, t: 9,  w: 28, h: 30 },   // top-mid
-    { l: 70, t: 5,  w: 28, h: 30 },   // top-right
-    { l: 17, t: 38, w: 28, h: 30 },   // mid-left
-    { l: 55, t: 41, w: 28, h: 30 },   // mid-right
-    { l: 2,  t: 55, w: 28, h: 29 },   // bottom-left
-    { l: 36, t: 58, w: 28, h: 29 },   // bottom-mid
-    { l: 70, t: 55, w: 28, h: 29 },   // bottom-right
+    { l: 1.5,  t: 11, w: 21, h: 28 },   // top row
+    { l: 26,   t: 8,  w: 21, h: 28 },
+    { l: 50.5, t: 11, w: 21, h: 28 },
+    { l: 75,   t: 8,  w: 21, h: 28 },
+    { l: 1.5,  t: 51, w: 21, h: 28 },   // bottom row
+    { l: 26,   t: 54, w: 21, h: 28 },
+    { l: 50.5, t: 51, w: 21, h: 28 },
+    { l: 75,   t: 54, w: 21, h: 28 },
   ];
-  // each reel sits at its own slight tilt (degrees)
-  const REEL_ANGLES = [-7, 5, -4, 8, -6, 7, -5, 4];
+  // each reel sits at its own slight tilt (degrees) — kept small so tiles stay separate
+  const REEL_ANGLES = [-5, 4, -4, 5, 4, -5, 5, -4];
 
   const ENTER = { l: 6, t: 40, w: 88, h: 54 };   // showreel on enter
   const FULL  = { l: 4, t: 6,  w: 92, h: 88 };   // showreel fullscreen / merge point
