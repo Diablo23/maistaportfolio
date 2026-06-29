@@ -294,13 +294,13 @@ section{position:relative;z-index:1;pointer-events:none}
   padding:96px 5vw 44px;display:flex;flex-direction:column;align-items:center;position:relative;
 }
 .plans{
-  display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px;
-  width:100%;max-width:1200px;
+  display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:26px;
+  width:100%;max-width:1320px;
 }
 .plan{
   position:relative;z-index:1;display:flex;flex-direction:column;
   background:linear-gradient(165deg,#2e2e2e 0%,#222 60%,#191919 100%);
-  color:#fff;border-radius:22px;padding:40px 38px 34px;
+  color:#fff;border-radius:22px;padding:46px 42px 40px;
   box-shadow:0 40px 90px -45px rgba(0,0,0,.65),inset 0 1px 0 rgba(255,255,255,.06);
   font-family:"Satoshi",sans-serif;
   transition:opacity .9s var(--ease),translate .9s var(--ease),filter .5s var(--ease),
@@ -371,7 +371,7 @@ section{position:relative;z-index:1;pointer-events:none}
 .plan-rate em{font-style:normal;color:#9b9b9b;font-size:13px;margin-left:4px}
 .plan-rate .plan-price{display:inline}
 .plans-note{
-  width:100%;max-width:1200px;margin:26px auto 0;
+  width:100%;max-width:1320px;margin:28px auto 0;
   font-family:"Satoshi",sans-serif;font-size:clamp(14px,1.3vw,16px);color:var(--dark);
   text-align:center;opacity:.8;
 }
