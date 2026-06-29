@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Web3 Motion Designer — Showreel Portfolio</title>
+<meta name="description" content="Self-taught Web3 Motion Designer — showreel & portfolio." />
+<link rel="preconnect" href="https://api.fontshare.com" crossorigin />
+<link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700,900&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="css/styles.css?v=30" />
+</head>
+<body>
+
+  <!-- Decorative floating shapes (orange bg, dark translucent shapes) -->
+  <div id="bg-shapes" aria-hidden="true"></div>
+
+  <!-- ============ HERO : scroll-driven showreel sequence ============ -->
+  <section id="hero">
+    <div class="hero-sticky">
+
+      <!-- Intro text card -->
+      <div class="hero-text interactive" id="heroText">
+        <span class="hero-line line1">
+          <span class="word"><span class="w">Self-Taught</span></span>
+          <span class="word"><span class="w">Web3</span></span>
+        </span>
+        <span class="hero-line line2">
+          <span class="word"><span class="w">Motion</span></span>
+          <span class="word"><span class="w">Designer</span></span>
+        </span>
+      </div>
+
+      <!-- Stage where the single showreel grows then splits into six -->
+      <div id="stage">
+        <!-- Single showreel video (enter + first scroll) -->
+        <figure class="showreel interactive" id="showreelMain">
+          <video src="assets/videos/showreel.mp4" poster="assets/videos/showreel-poster.jpg"
+                 muted loop playsinline preload="metadata"></video>
+        </figure>
+
+        <!-- Six reels that emerge from the showreel -->
+        <div id="reels"></div>
+      </div>
+
+      <div class="scroll-hint" id="scrollHint">
+        <span>scroll</span>
+        <svg viewBox="0 0 24 24" width="20" height="20"><path d="M12 4v14m0 0l-6-6m6 6l6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ CONTRIBUTED TO ============ -->
+  <section id="contributed">
+    <div class="panel-inner">
+    <h2 class="contrib-title interactive">Created a video for</h2>
+    <div class="logo-field" id="logoField"></div>
+    </div>
+  </section>
+
+  <!-- ============ PRICING ============ -->
+  <section id="pricing">
+    <div class="panel-inner">
+    <div class="plans">
+      <article class="plan interactive reveal">
+        <h3 class="plan-title">Promo video</h3>
+        <p class="plan-desc">High-energy video for when something is happening — a product launch, trading competition, feature drop, or airdrop. Built to make noise at the right moment.</p>
+        <ul class="plan-feats">
+          <li>Up to 30 sec of finished video</li>
+          <li>Storyboard development included</li>
+          <li>Sound design &amp; SFX included</li>
+          <li>Visuals aligned with your project's aesthetic</li>
+          <li>Unlimited revisions</li>
+          <li>3–5 days</li>
+        </ul>
+        <div class="plan-foot">
+          <span class="plan-price">from $325</span>
+        </div>
+      </article>
+
+      <article class="plan interactive reveal">
+        <h3 class="plan-title">Explainer video</h3>
+        <p class="plan-desc">Clean, narrative-driven video that walks your audience through what your protocol does and why it matters — built for landing pages and announcements.</p>
+        <ul class="plan-feats">
+          <li>Up to 90 sec of finished video</li>
+          <li>Storyboard development included</li>
+          <li>Sound design &amp; SFX included</li>
+          <li>We figure out what to say and how to say it</li>
+          <li>Unlimited revisions</li>
+          <li>7–10 days</li>
+        </ul>
+        <div class="plan-foot">
+          <span class="plan-price">from $525</span>
+        </div>
+      </article>
+
+      <article class="plan interactive reveal">
+        <h3 class="plan-title">Social content package</h3>
+        <p class="plan-desc">Weekly animated content that keeps your project visible — metrics, updates, feature reminders, community highlights. Consistent presence, not just big moments.</p>
+        <ul class="plan-feats">
+          <li>1 video per week (4 per month)</li>
+          <li>Storyboard development included</li>
+          <li>Sound design &amp; SFX included</li>
+          <li>Content tailored to your project's narrative</li>
+          <li>Unlimited revisions</li>
+        </ul>
+        <div class="plan-foot">
+          <span class="plan-rate"><span class="rate-label">one-time</span> <span class="rate-amt">$175</span></span>
+          <span class="plan-rate"><span class="rate-label">monthly</span> <span class="plan-price">from $800</span></span>
+        </div>
+      </article>
+    </div>
+    <p class="plans-note">Have something custom in mind? Just reach out — happy to discuss.</p>
+    </div>
+  </section>
+
+  <!-- ============ CONTACT ============ -->
+  <section id="contact">
+    <div class="panel-inner">
+    <span class="contact-head reveal">Contact me</span>
+    <nav class="contact-bar interactive reveal d1" aria-label="Contact links">
+      <a class="contact-tab" href="https://t.me/your_username" target="_blank" rel="noopener noreferrer">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path fill="currentColor" d="M21.94 4.4 18.9 19.1c-.23 1.02-.84 1.27-1.7.79l-4.7-3.46-2.27 2.18c-.25.25-.46.46-.94.46l.33-4.78 8.7-7.86c.38-.34-.08-.53-.59-.19L6.99 13.2l-4.64-1.45c-1.01-.32-1.03-1.01.21-1.5L20.65 3c.84-.31 1.57.2 1.29 1.4Z"/>
+        </svg>
+        <span class="tab-label">Telegram</span>
+      </a>
+      <a class="contact-tab" href="https://twitter.com/your_username" target="_blank" rel="noopener noreferrer">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path fill="currentColor" d="M23.95 4.57c-.88.39-1.83.65-2.82.77a4.93 4.93 0 0 0 2.16-2.72c-.95.56-2 .96-3.13 1.18a4.92 4.92 0 0 0-8.38 4.48A13.97 13.97 0 0 1 1.64 3.16a4.92 4.92 0 0 0 1.52 6.57A4.9 4.9 0 0 1 .96 9.1v.06a4.92 4.92 0 0 0 3.95 4.83 4.96 4.96 0 0 1-2.21.08 4.92 4.92 0 0 0 4.6 3.42A9.87 9.87 0 0 1 0 19.54a13.94 13.94 0 0 0 7.55 2.21c9.06 0 14-7.5 14-14 0-.21 0-.42-.02-.63.96-.69 1.8-1.56 2.46-2.55Z"/>
+        </svg>
+        <span class="tab-label">Twitter</span>
+      </a>
+      <a class="contact-tab" href="https://discord.com/users/your_id" target="_blank" rel="noopener noreferrer">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path fill="currentColor" d="M20.32 4.37A19.8 19.8 0 0 0 15.43 2.86a.07.07 0 0 0-.08.04c-.21.37-.45.86-.61 1.25a18.27 18.27 0 0 0-5.49 0c-.16-.4-.4-.88-.62-1.25a.08.08 0 0 0-.08-.04A19.74 19.74 0 0 0 3.68 4.37a.07.07 0 0 0-.04.03C.53 9.05-.32 13.58.1 18.06a.08.08 0 0 0 .03.05 19.9 19.9 0 0 0 5.99 3.03.08.08 0 0 0 .09-.03c.46-.63.87-1.3 1.22-1.99a.08.08 0 0 0-.04-.11 13.1 13.1 0 0 1-1.87-.89.08.08 0 0 1-.01-.13c.13-.09.25-.19.37-.29a.07.07 0 0 1 .08-.01c3.93 1.79 8.18 1.79 12.06 0a.07.07 0 0 1 .08.01c.12.1.24.2.37.29a.08.08 0 0 1-.01.13c-.6.35-1.22.64-1.87.89a.08.08 0 0 0-.04.11c.36.69.78 1.36 1.22 1.99a.08.08 0 0 0 .09.03 19.84 19.84 0 0 0 6-3.03.08.08 0 0 0 .03-.05c.5-5.18-.84-9.67-3.55-13.66a.06.06 0 0 0-.03-.03ZM8.02 15.33c-1.18 0-2.16-1.08-2.16-2.42 0-1.33.96-2.42 2.16-2.42 1.21 0 2.18 1.1 2.16 2.42 0 1.34-.96 2.42-2.16 2.42Zm7.97 0c-1.18 0-2.15-1.08-2.15-2.42 0-1.33.95-2.42 2.15-2.42 1.21 0 2.18 1.1 2.16 2.42 0 1.34-.95 2.42-2.16 2.42Z"/>
+        </svg>
+        <span class="tab-label">Discord</span>
+      </a>
+      <a class="contact-tab" href="mailto:you@example.com">
+        <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="5" width="18" height="14" rx="2"/>
+          <path d="m3.5 7 8.5 6 8.5-6"/>
+        </svg>
+        <span class="tab-label">Email</span>
+      </a>
+    </nav>
+    </div>
+  </section>
+
+  <!-- ============ LIGHTBOX ============ -->
+  <div id="lightbox" aria-hidden="true">
+    <button class="lb-close" id="lbClose" aria-label="Close video">
+      <svg viewBox="0 0 24 24" width="26" height="26"><path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>
+    </button>
+    <div class="lb-stage">
+      <video id="lbVideo" controls playsinline></video>
+    </div>
+  </div>
+
+  <script src="js/main.js?v=30"></script>
+</body>
+</html>
