@@ -547,3 +547,42 @@
     document.addEventListener("DOMContentLoaded", init);
   } else { init(); }
 })();
+
+/* ============================================================
+   CUSTOM CURSOR — dark core + orbiting squares (fine pointers only)
+   ============================================================ */
+(function () {
+  if (!window.matchMedia || !matchMedia("(hover:hover) and (pointer:fine)").matches) return;
+  const dot = document.getElementById("cursorDot");
+  const ring = document.getElementById("cursorRing");
+  if (!dot || !ring) return;
+
+  const html = document.documentElement;
+  html.classList.add("has-cursor");
+
+  const INTERACTIVE = "a,button,input,textarea,select,[role='button'],.interactive,.contact-tab,.plan,.reel,.logo,.lb-close";
+  let mx = -100, my = -100, rx = -100, ry = -100, seen = false;
+
+  addEventListener("mousemove", (e) => {
+    mx = e.clientX; my = e.clientY;
+    if (!seen) { seen = true; rx = mx; ry = my; }
+    const t = e.target;
+    const hov = !!(t && t.closest && t.closest(INTERACTIVE));
+    html.classList.toggle("cursor-hover", hov);
+  }, { passive: true });
+
+  document.addEventListener("mouseleave", () => { dot.style.opacity = ring.style.opacity = "0"; });
+  document.addEventListener("mouseenter", () => { dot.style.opacity = ring.style.opacity = "1"; });
+  // pressed feedback
+  addEventListener("mousedown", () => html.classList.add("cursor-down"));
+  addEventListener("mouseup", () => html.classList.remove("cursor-down"));
+
+  function loop() {
+    dot.style.transform = `translate(${mx}px, ${my}px)`;
+    rx += (mx - rx) * 0.2;
+    ry += (my - ry) * 0.2;
+    ring.style.transform = `translate(${rx}px, ${ry}px)`;
+    requestAnimationFrame(loop);
+  }
+  requestAnimationFrame(loop);
+})();
