@@ -491,3 +491,42 @@ section{position:relative;z-index:1;pointer-events:none}
   .shape,.logo,.scroll-hint svg{animation:none!important}
   *{scroll-behavior:auto}
 }
+
+/* ============ Custom cursor (orbiting squares) ============ */
+@media (hover:hover) and (pointer:fine){
+  html.has-cursor, html.has-cursor *{ cursor:none !important; }
+}
+#cursorDot,#cursorRing{
+  position:fixed;left:0;top:0;z-index:99999;pointer-events:none;
+  opacity:0;will-change:transform,opacity;
+}
+html.has-cursor #cursorDot,
+html.has-cursor #cursorRing{opacity:1}
+#cursorDot{
+  width:8px;height:8px;margin:-4px 0 0 -4px;border-radius:2px;
+  background:var(--dark);
+  transition:opacity .25s ease, width .18s ease, height .18s ease, background .18s ease;
+}
+#cursorRing{transition:opacity .25s ease}
+.cur-orbit{
+  position:absolute;left:0;top:0;width:0;height:0;
+  animation:curSpin 5s linear infinite;
+}
+.cur-orbit i{
+  position:absolute;width:7px;height:7px;margin:-3.5px 0 0 -3.5px;
+  background:var(--dark);border-radius:1.5px;
+  transition:background .2s ease;
+}
+.cur-orbit i:nth-child(1){transform:translate(0,-21px)}
+.cur-orbit i:nth-child(2){transform:translate(21px,0) rotate(45deg)}
+.cur-orbit i:nth-child(3){transform:translate(0,21px)}
+.cur-orbit i:nth-child(4){transform:translate(-21px,0) rotate(45deg)}
+@keyframes curSpin{to{transform:rotate(360deg)}}
+/* grow + turn orange over clickable things */
+.cur-orbit{transition:scale .25s var(--ease)}
+html.cursor-hover .cur-orbit{scale:1.45}
+html.cursor-hover #cursorDot{width:12px;height:12px;margin:-6px 0 0 -6px;background:var(--orange)}
+html.cursor-hover .cur-orbit i{background:var(--orange)}
+/* hide the native cursor flash before JS engages handled by .has-cursor */
+html.cursor-down .cur-orbit{scale:.8}
+html.cursor-down #cursorDot{width:6px;height:6px;margin:-3px 0 0 -3px}
