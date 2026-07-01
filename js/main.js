@@ -291,6 +291,7 @@
   const heroText = document.getElementById("heroText");
   const contribSection = document.getElementById("contributed");
   const contribTitle = document.querySelector(".contrib-title");
+  const contribTitleInner = contribTitle ? contribTitle.querySelector("span") : null;
   const logoFieldEl = document.getElementById("logoField");
 
   /* "Created a video for": title fills the screen, then shrinks to size as you
@@ -303,12 +304,19 @@
     let p = total > 0 ? (-r.top) / total : (r.top <= 0 ? 1 : 0);
     p = Math.max(0, Math.min(1, p));
     // title: fills the screen width, then shrinks to normal — never past the edges
+    // title is rendered large (240px) and only ever scaled DOWN, so it never
+    // pixelates when big. It fills the width, then shrinks to normal size.
     const s = smoothstep(0, 0.55, p);
-    const natW = contribTitle.offsetWidth || 1;
-    const maxScale = Math.min(2.0, Math.max(1, (window.innerWidth * 0.9) / natW));
-    const scale = lerp(maxScale, 1, s);
-    const ty = lerp(192, 0, s);                            // keep it screen-centred while large
-    contribTitle.style.transform = `translateY(${ty.toFixed(1)}px) scale(${scale.toFixed(3)})`;
+    if (contribTitleInner) {
+      const BASE = 240;
+      const natW = contribTitleInner.offsetWidth || 1;      // measured at the 240px base
+      const vw = window.innerWidth;
+      const fillScale = Math.min(1, (vw * 0.9) / natW);      // fill width, never upscale
+      const normalScale = Math.min(92, vw * 0.072) / BASE;  // normal on-page size
+      const ts = lerp(fillScale, normalScale, s);
+      const ty = lerp(0, -235, s);                          // rise above the logos as it shrinks
+      contribTitleInner.style.transform = `translateY(${ty.toFixed(1)}px) scale(${ts.toFixed(4)})`;
+    }
     // logos pop in (fade + un-blur), staggered
     const logos = logoFieldEl ? logoFieldEl.children : [];
     for (let i = 0; i < logos.length; i++) {
