@@ -262,10 +262,15 @@ section{position:relative;z-index:1;pointer-events:none}
    ============================================================ */
 #contributed{padding:60px 6vw 90px}
 .contrib-title{
-  font-family:"Satoshi",sans-serif;font-weight:900;
-  font-size:clamp(40px,7vw,92px);color:var(--dark);letter-spacing:-.02em;line-height:1.02;
-  text-align:center;margin-bottom:44px;
+  position:absolute;inset:0;margin:0;pointer-events:none;overflow:hidden;
+  display:flex;align-items:center;justify-content:center;
+}
+.contrib-title span{
+  font-family:"Satoshi",sans-serif;font-weight:900;color:var(--dark);
+  font-size:240px;line-height:1;letter-spacing:-.02em;white-space:nowrap;
   text-shadow:0 6px 22px rgba(0,0,0,.18),0 2px 4px rgba(0,0,0,.14);
+  transform-origin:center center;will-change:transform;
+  transform:translateY(0) scale(.38);
 }
 .logo-field{
   position:relative;height:340px;width:100%;max-width:1100px;margin:0 auto;
@@ -392,9 +397,6 @@ section{position:relative;z-index:1;pointer-events:none}
   position:sticky;top:0;
   height:100vh;
   padding:0 6vw;
-}
-.contrib-title{
-  will-change:transform;transform-origin:center center;
 }
 .panel-inner{
   display:flex;flex-direction:column;align-items:center;justify-content:center;
