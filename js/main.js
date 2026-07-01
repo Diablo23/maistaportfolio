@@ -381,8 +381,8 @@
       o.reel.style.transform = `translate(${fx}px, ${fy}px) rotate(${rot.toFixed(2)}deg)`;
     });
 
-    // enable interaction only when fully scattered
-    stage.classList.toggle("live", p > 0.88);
+    // enable interaction as soon as the reels have separated
+    stage.classList.toggle("live", p > 0.8);
 
     // dynamic, scroll-reactive background shapes
     updateShapes(window.scrollY || window.pageYOffset || 0, t);
