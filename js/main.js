@@ -549,40 +549,62 @@
 })();
 
 /* ============================================================
-   CUSTOM CURSOR — dark core + orbiting squares (fine pointers only)
+   CUSTOM CURSOR — stylized arrow + trailing cube particles
+   (fine pointers only; no cubes when idle)
    ============================================================ */
 (function () {
   if (!window.matchMedia || !matchMedia("(hover:hover) and (pointer:fine)").matches) return;
-  const dot = document.getElementById("cursorDot");
-  const ring = document.getElementById("cursorRing");
-  if (!dot || !ring) return;
-
+  const arrow = document.getElementById("cursorArrow");
+  if (!arrow) return;
   const html = document.documentElement;
   html.classList.add("has-cursor");
 
-  const INTERACTIVE = "a,button,input,textarea,select,[role='button'],.interactive,.contact-tab,.plan,.reel,.logo,.lb-close";
-  let mx = -100, my = -100, rx = -100, ry = -100, seen = false;
+  let lastX = null, lastY = null, acc = 0, step = 9, active = 0;
+  const MAX_CUBES = 140;
+
+  function spawnCube(x, y) {
+    if (active >= MAX_CUBES) return;
+    const size = 4 + Math.random() * 6;                 // 4–10px
+    const ox = (Math.random() - 0.5) * 12;              // organic offset off the path
+    const oy = (Math.random() - 0.5) * 12;
+    const outX = (Math.random() - 0.5) * 40;            // drift outward
+    const dy = 16 + Math.random() * 34;                 // drift downward
+    const startRot = Math.random() * 44 - 22;
+    const spin = (Math.random() < 0.5 ? -1 : 1) * (40 + Math.random() * 130); // slow rotation
+    const life = 620 + Math.random() * 560;
+
+    const c = document.createElement("div");
+    c.className = "trail-cube";
+    c.style.width = c.style.height = size.toFixed(1) + "px";
+    c.style.left = (x + ox) + "px";
+    c.style.top = (y + oy) + "px";
+    document.body.appendChild(c);
+    active++;
+
+    const anim = c.animate([
+      { transform: `translate(-50%,-50%) rotate(${startRot}deg) scale(1)`, opacity: 0.92 },
+      { transform: `translate(calc(-50% + ${outX}px), calc(-50% + ${dy}px)) rotate(${startRot + spin}deg) scale(0.8)`, opacity: 0 }
+    ], { duration: life, easing: "cubic-bezier(.2,.55,.3,1)", fill: "forwards" });
+    anim.onfinish = () => { c.remove(); active--; };
+    anim.oncancel = () => { active--; };
+  }
 
   addEventListener("mousemove", (e) => {
-    mx = e.clientX; my = e.clientY;
-    if (!seen) { seen = true; rx = mx; ry = my; }
-    const t = e.target;
-    const hov = !!(t && t.closest && t.closest(INTERACTIVE));
-    html.classList.toggle("cursor-hover", hov);
+    const x = e.clientX, y = e.clientY;
+    arrow.style.transform = `translate(${x}px, ${y}px)`;
+    if (lastX !== null) {
+      acc += Math.hypot(x - lastX, y - lastY);          // more distance ⇒ more cubes ⇒ faster = denser
+      let guard = 0;
+      while (acc >= step && guard < 6) {                 // cap per event so big jumps don't flood
+        spawnCube(x + (Math.random() - 0.5) * 4, y + (Math.random() - 0.5) * 4);
+        acc -= step;
+        step = 7 + Math.random() * 8;                    // jittered spacing = organic
+        guard++;
+      }
+    }
+    lastX = x; lastY = y;
   }, { passive: true });
 
-  document.addEventListener("mouseleave", () => { dot.style.opacity = ring.style.opacity = "0"; });
-  document.addEventListener("mouseenter", () => { dot.style.opacity = ring.style.opacity = "1"; });
-  // pressed feedback
-  addEventListener("mousedown", () => html.classList.add("cursor-down"));
-  addEventListener("mouseup", () => html.classList.remove("cursor-down"));
-
-  function loop() {
-    dot.style.transform = `translate(${mx}px, ${my}px)`;
-    rx += (mx - rx) * 0.2;
-    ry += (my - ry) * 0.2;
-    ring.style.transform = `translate(${rx}px, ${ry}px)`;
-    requestAnimationFrame(loop);
-  }
-  requestAnimationFrame(loop);
+  document.addEventListener("mouseleave", () => { arrow.style.opacity = "0"; });
+  document.addEventListener("mouseenter", () => { arrow.style.opacity = "1"; });
 })();
