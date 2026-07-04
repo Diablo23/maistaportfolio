@@ -33,22 +33,25 @@
     { src: "assets/videos/reel-6.mp4", tag: "REEL 06" },
     { src: "assets/videos/reel-7.mp4", tag: "REEL 07" },
     { src: "assets/videos/reel-8.mp4", tag: "REEL 08" },
+    { src: "assets/videos/reel-9.mp4", tag: "HIGHLIGHT" },
   ];
 
-  /* scattered target rects (% of stage) — 4 × 2, spaced so none overlap
-     (with a little vertical jitter + tilt for a lively collage). */
+  /* scattered target rects (% of stage) — 3 × 3 ring with a featured centre.
+     Spaced so none overlap; the centre tile (index 8) is the highlight,
+     slightly larger and kept upright so it stands out. */
   const SCATTER = [
-    { l: 1.5,  t: 11, w: 21, h: 28 },   // top row
-    { l: 26,   t: 8,  w: 21, h: 28 },
-    { l: 50.5, t: 11, w: 21, h: 28 },
-    { l: 75,   t: 8,  w: 21, h: 28 },
-    { l: 1.5,  t: 51, w: 21, h: 28 },   // bottom row
-    { l: 26,   t: 54, w: 21, h: 28 },
-    { l: 50.5, t: 51, w: 21, h: 28 },
-    { l: 75,   t: 54, w: 21, h: 28 },
+    { l: 2,  t: 5,  w: 24, h: 22 },    // 0 top-left
+    { l: 38, t: 4,  w: 24, h: 22 },    // 1 top-centre
+    { l: 74, t: 5,  w: 24, h: 22 },    // 2 top-right
+    { l: 2,  t: 37, w: 24, h: 22 },    // 3 mid-left
+    { l: 74, t: 37, w: 24, h: 22 },    // 4 mid-right
+    { l: 2,  t: 63, w: 24, h: 22 },    // 5 bottom-left
+    { l: 38, t: 64, w: 24, h: 22 },    // 6 bottom-centre
+    { l: 74, t: 63, w: 24, h: 22 },    // 7 bottom-right
+    { l: 35, t: 35, w: 30, h: 24 },    // 8 CENTRE — highlight
   ];
-  // each reel sits at its own slight tilt (degrees) — kept small so tiles stay separate
-  const REEL_ANGLES = [-5, 4, -4, 5, 4, -5, 5, -4];
+  // slight tilt per reel; the centre highlight (index 8) stays upright (0)
+  const REEL_ANGLES = [-5, 4, -4, 5, -5, 5, -4, 4, 0];
 
   const ENTER = { l: 6, t: 40, w: 88, h: 54 };   // showreel on enter
   const FULL  = { l: 4, t: 6,  w: 92, h: 88 };   // showreel fullscreen / merge point
@@ -198,7 +201,7 @@
     const wrap = document.getElementById("reels");
     REELS.forEach((r, i) => {
       const reel = document.createElement("div");
-      reel.className = "reel interactive";
+      reel.className = "reel interactive" + (i === REELS.length - 1 ? " reel-highlight" : "");
       reel.dataset.index = i;
 
       const inner = document.createElement("div");
