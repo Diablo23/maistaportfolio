@@ -18,7 +18,9 @@
 
 *{box-sizing:border-box;margin:0;padding:0}
 
-html{scroll-behavior:auto}
+html{scroll-behavior:auto;font-size:100%}   /* 1rem = 16px base */
+/* responsive media defaults (specific cover-fill videos override height below) */
+img,video{max-width:100%;height:auto;display:block}
 body{
   font-family:"Satoshi",system-ui,sans-serif;
   background:var(--orange);
@@ -70,7 +72,7 @@ section{position:relative;z-index:1;pointer-events:none}
 
 /* ============ Brand wordmark ============ */
 .brand{
-  position:fixed;top:22px;left:26px;z-index:120;
+  position:fixed;top:1.375rem;left:1.625rem;z-index:120;
   display:flex;align-items:center;gap:10px;
   pointer-events:none;mix-blend-mode:normal;
 }
@@ -81,7 +83,7 @@ section{position:relative;z-index:1;pointer-events:none}
 }
 .brand-name{
   font-family:"Satoshi",sans-serif;font-weight:700;
-  letter-spacing:.14em;font-size:15px;color:var(--dark);
+  letter-spacing:.14em;font-size:.9375rem;color:var(--dark);
 }
 .brand-name em{font-style:normal;color:#fff;background:var(--dark);padding:0 5px;border-radius:4px;margin-left:2px}
 
@@ -210,7 +212,7 @@ section{position:relative;z-index:1;pointer-events:none}
   opacity:0;transition:opacity .4s var(--ease);
 }
 .reel-inner .play{
-  position:absolute;left:50%;top:50%;width:54px;height:54px;
+  position:absolute;left:50%;top:50%;width:3.375rem;height:3.375rem;
   transform:translate(-50%,-50%) scale(.6);
   border-radius:50%;background:rgba(255,141,27,.92);
   display:grid;place-items:center;opacity:0;
@@ -229,7 +231,7 @@ section{position:relative;z-index:1;pointer-events:none}
 .scroll-hint{
   position:absolute;left:50%;bottom:30px;transform:translateX(-50%);
   display:flex;flex-direction:column;align-items:center;gap:6px;
-  color:var(--dark);font-size:12px;letter-spacing:.28em;text-transform:uppercase;
+  color:var(--dark);font-size:.75rem;letter-spacing:.28em;text-transform:uppercase;
   z-index:8;transition:opacity .4s var(--ease);
 }
 .scroll-hint svg{animation:bob 1.6s var(--ease-soft) infinite}
@@ -241,7 +243,7 @@ section{position:relative;z-index:1;pointer-events:none}
 #portfolio{padding:120px 6vw 90px}
 .section-head{max-width:760px;margin-bottom:54px}
 .eyebrow{
-  font-size:13px;letter-spacing:.3em;text-transform:uppercase;
+  font-size:.8125rem;letter-spacing:.3em;text-transform:uppercase;
   font-weight:700;color:var(--dark);opacity:.7;margin-bottom:14px;
 }
 .section-head h2{
@@ -291,7 +293,7 @@ section{position:relative;z-index:1;pointer-events:none}
   transform:translateY(0) scale(.38);
 }
 .logo-field{
-  position:relative;height:340px;width:100%;max-width:1100px;margin:0 auto;
+  position:relative;height:clamp(17rem,44vh,21.25rem);width:100%;max-width:68.75rem;margin:0 auto;
 }
 .logo{
   position:absolute;display:grid;place-items:center;
@@ -314,16 +316,18 @@ section{position:relative;z-index:1;pointer-events:none}
    PRICING
    ============================================================ */
 #pricing{
-  padding:96px 5vw 44px;display:flex;flex-direction:column;align-items:center;position:relative;
+  padding:clamp(3.5rem,8vw,6rem) max(1rem,5vw) 2.75rem;display:flex;flex-direction:column;align-items:center;position:relative;
 }
 .plans{
-  display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:26px;
+  display:grid;
+  grid-template-columns:repeat(auto-fit, minmax(min(100%, 22rem), 1fr));
+  gap:1.6rem;
   width:100%;max-width:1320px;
 }
 .plan{
   position:relative;z-index:1;display:flex;flex-direction:column;
   background:linear-gradient(165deg,#2e2e2e 0%,#222 60%,#191919 100%);
-  color:#fff;border-radius:22px;padding:46px 42px 40px;
+  color:#fff;border-radius:22px;padding:clamp(2rem,3vw,2.875rem) clamp(1.5rem,2.6vw,2.625rem) 2.5rem;
   box-shadow:0 40px 90px -45px rgba(0,0,0,.65),inset 0 1px 0 rgba(255,255,255,.06);
   font-family:"Satoshi",sans-serif;
   transition:opacity .9s var(--ease),translate .9s var(--ease),filter .5s var(--ease),
@@ -351,15 +355,15 @@ section{position:relative;z-index:1;pointer-events:none}
 .plan:hover .rate-amt{color:#241400}
 .plan-title{
   font-family:"Satoshi",sans-serif;font-weight:900;
-  font-size:clamp(22px,2.4vw,30px);letter-spacing:-.01em;color:#fff;margin-bottom:14px;
+  font-size:clamp(1.375rem,2.4vw,1.875rem);letter-spacing:-.01em;color:#fff;margin-bottom:.875rem;
 }
-.plan-desc{font-size:clamp(14px,1.3vw,16px);line-height:1.5;color:#c9c9c9;margin-bottom:22px}
+.plan-desc{font-size:clamp(.875rem,1.3vw,1rem);line-height:1.5;color:#c9c9c9;margin-bottom:1.375rem}
 .plan-feats{
-  list-style:none;display:flex;flex-direction:column;gap:13px;
-  padding:22px 0;margin:0;border-top:1px solid rgba(255,255,255,.12);
+  list-style:none;display:flex;flex-direction:column;gap:.8rem;
+  padding:1.4rem 0;margin:0;border-top:1px solid rgba(255,255,255,.12);
 }
 .plan-feats li{
-  position:relative;padding-left:34px;font-size:clamp(14px,1.35vw,16.5px);color:#ededed;line-height:1.35;
+  position:relative;padding-left:2.125rem;font-size:clamp(.875rem,1.35vw,1.03rem);color:#ededed;line-height:1.35;
 }
 .plan-feats li::before{
   content:"";position:absolute;left:0;top:1px;width:20px;height:20px;border-radius:50%;
@@ -369,9 +373,9 @@ section{position:relative;z-index:1;pointer-events:none}
   content:"";position:absolute;left:6px;top:7px;width:8px;height:4px;
   border-left:2px solid #1c1c1c;border-bottom:2px solid #1c1c1c;transform:rotate(-45deg);
 }
-.plan-foot{margin-top:auto;border-top:1px solid rgba(255,255,255,.12);padding-top:20px}
+.plan-foot{margin-top:auto;border-top:1px solid rgba(255,255,255,.12);padding-top:1.25rem}
 .plan-time{
-  display:flex;align-items:center;gap:8px;font-size:14px;color:#9b9b9b;margin-bottom:12px;
+  display:flex;align-items:center;gap:.5rem;font-size:.875rem;color:#9b9b9b;margin-bottom:.75rem;
 }
 .plan-time::before{
   content:"";width:14px;height:14px;border:2px solid #9b9b9b;border-radius:50%;
@@ -379,30 +383,27 @@ section{position:relative;z-index:1;pointer-events:none}
 }
 .plan-price{
   display:block;font-family:"Satoshi",sans-serif;font-weight:900;
-  font-size:clamp(26px,2.6vw,38px);color:var(--orange);letter-spacing:-.01em;
+  font-size:clamp(1.625rem,2.6vw,2.375rem);color:var(--orange);letter-spacing:-.01em;
 }
 .plan-price em{
-  font-style:normal;font-weight:500;font-size:clamp(11px,1vw,13px);color:#9b9b9b;
+  font-style:normal;font-weight:500;font-size:clamp(.7rem,1vw,.8125rem);color:#9b9b9b;
   letter-spacing:0;margin-left:6px;
 }
 /* social-package dual rates */
 .plan-rate{display:flex;align-items:baseline;gap:10px;margin-top:10px}
 .plan-rate:first-of-type{margin-top:0}
-.rate-label{font-size:12px;letter-spacing:.04em;text-transform:uppercase;color:#9b9b9b;min-width:62px}
-.rate-amt{font-family:"Satoshi",sans-serif;font-weight:900;font-size:clamp(20px,2vw,26px);color:#fff}
+.rate-label{font-size:.75rem;letter-spacing:.04em;text-transform:uppercase;color:#9b9b9b;min-width:3.875rem}
+.rate-amt{font-family:"Satoshi",sans-serif;font-weight:900;font-size:clamp(1.25rem,2vw,1.625rem);color:#fff}
 .rate-amt + em, .rate-amt ~ em{font-style:normal;color:#9b9b9b;font-size:13px;margin-left:4px}
 .plan-rate em{font-style:normal;color:#9b9b9b;font-size:13px;margin-left:4px}
 .plan-rate .plan-price{display:inline}
 .plans-note{
-  width:100%;max-width:1320px;margin:28px auto 0;
-  font-family:"Satoshi",sans-serif;font-size:clamp(14px,1.3vw,16px);color:var(--dark);
+  width:100%;max-width:1320px;margin:1.75rem auto 0;
+  font-family:"Satoshi",sans-serif;font-size:clamp(.875rem,1.3vw,1rem);color:var(--dark);
   text-align:center;opacity:.8;
 }
-@media (max-width:1000px){
-  .plans{grid-template-columns:repeat(2,minmax(0,1fr))}
-}
-@media (max-width:680px){
-  .plans{grid-template-columns:1fr;gap:20px}
+@media (max-width:767.98px){
+  .plans{grid-template-columns:1fr;gap:1.25rem}
 }
 
 /* blurred glow accents in the contributed section */
@@ -414,7 +415,7 @@ section{position:relative;z-index:1;pointer-events:none}
 #contributed .panel-inner{
   position:sticky;top:0;
   height:100vh;
-  padding:0 6vw;
+  padding:0 max(1rem,6vw);
 }
 .panel-inner{
   display:flex;flex-direction:column;align-items:center;justify-content:center;
@@ -432,7 +433,7 @@ section{position:relative;z-index:1;pointer-events:none}
    CONTACT
    ============================================================ */
 #contact{
-  padding:28px 6vw 120px;display:flex;flex-direction:column;align-items:center;gap:24px;position:relative;
+  padding:1.75rem max(1rem,6vw) clamp(4rem,10vw,7.5rem);display:flex;flex-direction:column;align-items:center;gap:24px;position:relative;
 }
 #contact::before{
   content:"";position:absolute;left:50%;top:60px;width:min(720px,82vw);height:240px;
@@ -451,8 +452,8 @@ section{position:relative;z-index:1;pointer-events:none}
   box-shadow:0 34px 80px -34px rgba(0,0,0,.65),inset 0 1px 0 rgba(255,255,255,.06);
 }
 .contact-tab{
-  flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;
-  padding:30px 16px;text-decoration:none;color:#cdcdcd;position:relative;
+  flex:1 1 8rem;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.75rem;
+  padding:clamp(1.25rem,3vw,1.875rem) 1rem;text-decoration:none;color:#cdcdcd;position:relative;
   transition:background .35s var(--ease),color .35s var(--ease),transform .35s var(--ease);
 }
 .contact-tab + .contact-tab{box-shadow:inset 1px 0 0 rgba(255,255,255,.09)}
@@ -486,7 +487,7 @@ section{position:relative;z-index:1;pointer-events:none}
 @keyframes lbPop{from{transform:scale(.86);opacity:.4}to{transform:scale(1);opacity:1}}
 .lb-stage video{width:100%;height:100%;display:block;background:#000}
 .lb-close{
-  position:absolute;top:24px;right:26px;width:54px;height:54px;border:none;
+  position:absolute;top:1.5rem;right:1.625rem;width:3.375rem;height:3.375rem;border:none;
   background:var(--dark);color:#fff;border-radius:50%;cursor:pointer;
   display:grid;place-items:center;transition:transform .3s var(--ease),background .3s var(--ease);
 }
@@ -533,4 +534,39 @@ html.has-cursor #cursorArrow{opacity:1}
   border-bottom:1px solid rgba(0,0,0,.42);
   box-shadow:inset 1px 1px 0 rgba(255,255,255,.10);
   will-change:transform,opacity;
+}
+
+/* ============================================================
+   Responsive addendum — touch, zoom & small-screen polish
+   ============================================================ */
+
+/* Rule 8 — no custom cursor / animated trail on touch devices */
+@media (pointer:coarse){
+  html.has-cursor, html.has-cursor *{cursor:auto !important}
+  #cursorArrow,.trail-cube{display:none !important}
+}
+
+/* Rule 7 — contact nav stays on one row until it gets tight, then 2×2 */
+.contact-bar{flex-wrap:wrap}
+@media (max-width:33.75rem){            /* 540px */
+  .contact-tab{flex:1 1 40%}
+}
+
+/* Tablet and below */
+@media (max-width:48rem){               /* 768px */
+  .contact-head{text-align:center}
+}
+
+/* Phones */
+@media (max-width:30rem){               /* 480px */
+  .brand{top:1rem;left:1rem}
+  .contrib-title span{font-size:200px}  /* smaller base keeps the shrink math light */
+  #contact{gap:1.25rem}
+}
+
+/* Very small — keep everything breathing at >=1rem side padding */
+@media (max-width:22.5rem){             /* 360px */
+  .plan{padding:1.75rem 1.25rem 2rem}
+  .contact-tab{padding:1.1rem .6rem;gap:.5rem}
+  .contact-tab svg{width:1.4rem;height:1.4rem}
 }
