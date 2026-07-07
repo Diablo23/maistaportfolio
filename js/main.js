@@ -42,13 +42,13 @@
   const SCATTER = [
     { l: 2,  t: 5,  w: 24, h: 22 },    // 0 top-left
     { l: 38, t: 4,  w: 24, h: 22 },    // 1 top-centre
-    { l: 74, t: 5,  w: 24, h: 22 },    // 2 top-right
+    { l: 38, t: 34, w: 24, h: 22 },    // 2 third reel — now in the centre
     { l: 2,  t: 37, w: 24, h: 22 },    // 3 mid-left
     { l: 74, t: 37, w: 24, h: 22 },    // 4 mid-right
     { l: 2,  t: 63, w: 24, h: 22 },    // 5 bottom-left
     { l: 38, t: 64, w: 24, h: 22 },    // 6 bottom-centre
     { l: 74, t: 63, w: 24, h: 22 },    // 7 bottom-right
-    { l: 35, t: 35, w: 30, h: 24 },    // 8 CENTRE — highlight
+    { l: 67, t: 4,  w: 30, h: 24 },    // 8 highlight — now in the 3rd (top-right) place
   ];
   // slight tilt per reel; the centre highlight (index 8) stays upright (0)
   const REEL_ANGLES = [-5, 4, -4, 5, -5, 5, -4, 4, 0];
