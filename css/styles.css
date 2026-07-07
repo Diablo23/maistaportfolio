@@ -189,23 +189,6 @@ section{position:relative;z-index:1;pointer-events:none}
 .reel:nth-child(7) .reel-inner::before{animation-delay:-3.6s}
 .reel:nth-child(8) .reel-inner::before{animation-delay:-4.2s}
 .reel:nth-child(9) .reel-inner::before{animation-delay:-4.8s}
-/* featured centre reel — brighter, thicker ribbon + stronger backlight */
-.reel-highlight .reel-inner{
-  box-shadow:0 30px 74px -28px rgba(0,0,0,.6), 0 0 92px 8px rgba(255,190,105,.9);
-}
-.reel-highlight .reel-inner::before{
-  padding:4px;
-  background:conic-gradient(from var(--ribbon),
-     rgba(255,196,96,.72) 0deg,
-     #ffe7b4 66deg, #ffffff 94deg, #ffd074 122deg,
-     rgba(255,196,96,.72) 172deg,
-     rgba(255,196,96,.72) 360deg);
-  filter:drop-shadow(0 0 16px rgba(255,216,150,.95)) drop-shadow(0 0 40px rgba(255,182,84,.75));
-  animation-duration:2.6s;
-}
-#stage.live .reel-highlight .reel-inner:hover{
-  box-shadow:0 44px 96px -30px rgba(0,0,0,.6), 0 0 120px 10px rgba(255,190,105,1);
-}
 .reel-inner::after{
   content:"";position:absolute;inset:0;
   background:linear-gradient(180deg,transparent 55%,rgba(0,0,0,.35));
