@@ -48,10 +48,10 @@
     { l: 2,  t: 63, w: 24, h: 22 },    // 5 bottom-left
     { l: 38, t: 64, w: 24, h: 22 },    // 6 bottom-centre
     { l: 74, t: 63, w: 24, h: 22 },    // 7 bottom-right
-    { l: 67, t: 4,  w: 30, h: 24 },    // 8 highlight — now in the 3rd (top-right) place
+    { l: 74, t: 5,  w: 24, h: 22 },    // 8 top-right — now a normal reel like the rest
   ];
   // slight tilt per reel; the centre highlight (index 8) stays upright (0)
-  const REEL_ANGLES = [-5, 4, -4, 5, -5, 5, -4, 4, 0];
+  const REEL_ANGLES = [-5, 4, -4, 5, -5, 5, -4, 4, 5];
 
   const ENTER = { l: 6, t: 40, w: 88, h: 54 };   // showreel on enter
   const FULL  = { l: 4, t: 6,  w: 92, h: 88 };   // showreel fullscreen / merge point
@@ -201,7 +201,7 @@
     const wrap = document.getElementById("reels");
     REELS.forEach((r, i) => {
       const reel = document.createElement("div");
-      reel.className = "reel interactive" + (i === REELS.length - 1 ? " reel-highlight" : "");
+      reel.className = "reel interactive";
       reel.dataset.index = i;
 
       const inner = document.createElement("div");
