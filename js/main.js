@@ -81,8 +81,8 @@
     const pageH = Math.max(document.documentElement.scrollHeight, window.innerHeight);
     field.style.height = pageH + "px";
     const screens = pageH / window.innerHeight;
-    const perScreen = window.innerWidth < 760 ? 24 : 30;        // 3× the previous density
-    const count = Math.min(300, Math.max(40, Math.round(screens * perScreen)));
+    const perScreen = window.innerWidth < 760 ? 10 : 15;        // lighter field (Retina-friendly)
+    const count = Math.min(150, Math.max(30, Math.round(screens * perScreen)));
     const BASE = 105;                                           // "original" reference size
     const order = ["v-square", "v-circle", "v-diamond"];
     const fieldW = field.clientWidth || window.innerWidth;
@@ -411,12 +411,17 @@
     requestAnimationFrame(loop);
   }
 
-  /* play / pause showreel based on hero visibility */
+  /* play / pause showreel + reels based on hero visibility (saves decode work) */
   function manageShowreel() {
     const r = hero.getBoundingClientRect();
     const inView = r.bottom > 0 && r.top < window.innerHeight;
     if (inView) showreelVid.play().catch(() => {});
     else showreelVid.pause();
+    for (let i = 0; i < reelEls.length; i++) {
+      const v = reelEls[i].video;
+      if (inView) { if (v.paused) v.play().catch(() => {}); }
+      else if (!v.paused) v.pause();
+    }
   }
 
   /* ============================================================
@@ -571,7 +576,7 @@
   html.classList.add("has-cursor");
 
   let lastX = null, lastY = null, acc = 0, step = 9, active = 0;
-  const MAX_CUBES = 140;
+  const MAX_CUBES = 70;
 
   function spawnCube(x, y) {
     if (active >= MAX_CUBES) return;
