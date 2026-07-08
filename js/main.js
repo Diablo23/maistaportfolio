@@ -225,11 +225,14 @@
       play.className = "play";
       play.innerHTML = '<svg viewBox="0 0 24 24" width="22" height="22"><path d="M8 5v14l11-7z" fill="#252525"/></svg>';
 
-      inner.appendChild(media); inner.appendChild(play);
+      const hit = document.createElement("div");
+      hit.className = "reel-hit";
+
+      inner.appendChild(media); inner.appendChild(play); inner.appendChild(hit);
       reel.appendChild(inner);
       wrap.appendChild(reel);
 
-      inner.addEventListener("click", () => openLightbox(r.id, r.tag));
+      hit.addEventListener("click", () => openLightbox(r.id, r.tag));
       reelEls.push({ reel, frame: ifr });
     });
   }
