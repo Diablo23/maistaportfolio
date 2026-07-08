@@ -52,8 +52,37 @@
     { l: 74, t: 63, w: 24, h: 22 },    // 7 bottom-right
     { l: 74, t: 5,  w: 24, h: 22 },    // 8 top-right — now a normal reel like the rest
   ];
-  // slight tilt per reel; the centre highlight (index 8) stays upright (0)
+  // slight tilt per reel
   const REEL_ANGLES = [-5, 4, -4, 5, -5, 5, -4, 4, 5];
+
+  // each reel's video aspect ratio (width/height), filled from Vimeo on load
+  const reelAR = new Array(REELS.length).fill(null);
+  const DEFAULT_AR = 16 / 9;
+  // largest rect of the given aspect that fits inside a slot box, centred in it
+  function fitInSlot(slot, ar, sW, sH) {
+    ar = ar || DEFAULT_AR;
+    const boxW = (slot.w / 100) * sW, boxH = (slot.h / 100) * sH;
+    let fw, fh;
+    if (boxW / boxH > ar) { fh = boxH; fw = boxH * ar; }   // slot wider than video → limit by height
+    else { fw = boxW; fh = boxW / ar; }                    // slot taller than video → limit by width
+    const w = (fw / sW) * 100, h = (fh / sH) * 100;
+    return { l: slot.l + (slot.w - w) / 2, t: slot.t + (slot.h - h) / 2, w, h };
+  }
+  // ask Vimeo for each video's real dimensions (oEmbed via JSONP), then reshape its frame
+  function loadReelAspects() {
+    REELS.forEach((reel, i) => {
+      const s = document.createElement("script");
+      const cb = "voe_" + i + "_" + reel.id;
+      window[cb] = function (data) {
+        if (data && data.width && data.height) reelAR[i] = data.width / data.height;
+        try { delete window[cb]; } catch (e) {}
+        s.remove();
+      };
+      s.onerror = function () { try { delete window[cb]; } catch (e) {} s.remove(); };
+      s.src = "https://vimeo.com/api/oembed.json?url=https%3A%2F%2Fvimeo.com%2F" + reel.id + "&callback=" + cb;
+      document.head.appendChild(s);
+    });
+  }
 
   const ENTER = { l: 6, t: 40, w: 88, h: 54 };   // showreel on enter
   const FULL  = { l: 4, t: 6,  w: 92, h: 88 };   // showreel fullscreen / merge point
@@ -377,9 +406,12 @@
 
     // scatter the six reels (0.54 → 0.86), then HOLD scattered 0.86–1.0 (STOP)
     const t = performance.now() / 1000;
+    const sW = stage.clientWidth || window.innerWidth;
+    const sH = stage.clientHeight || window.innerHeight;
     reelEls.forEach((o, i) => {
       const qi = easeInOut(smoothstep(0.54 + i * 0.012, 0.86, p));
-      const r = lerpRect(FULL, SCATTER[i], qi);
+      const target = fitInSlot(SCATTER[i], reelAR[i], sW, sH);
+      const r = lerpRect(FULL, target, qi);
       applyRect(o.reel, r);
       o.reel.style.opacity = reelsIn;
       // gentle chaotic float + tilt once scattered (still levitating)
@@ -504,6 +536,7 @@
   function init() {
     const safe = (fn) => { try { fn(); } catch (e) { console.warn("init step failed:", e); } };
     safe(buildReels);
+    safe(loadReelAspects);
     safe(buildLogos);
     safe(buildShapes);                          // after content so page height is known
     safe(setupReveals);
