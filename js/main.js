@@ -24,16 +24,18 @@
   const rand = (a, b) => a + Math.random() * (b - a);
 
   /* ---------- reel sources ---------- */
+  // Vimeo video IDs (embedded via iframe — files no longer hosted in the repo)
+  const SHOWREEL_ID = "1208013673";
   const REELS = [
-    { src: "assets/videos/reel-1.mp4", tag: "REEL 01" },
-    { src: "assets/videos/reel-2.mp4", tag: "REEL 02" },
-    { src: "assets/videos/reel-3.mp4", tag: "REEL 03" },
-    { src: "assets/videos/reel-4.mp4", tag: "REEL 04" },
-    { src: "assets/videos/reel-5.mp4", tag: "REEL 05" },
-    { src: "assets/videos/reel-6.mp4", tag: "REEL 06" },
-    { src: "assets/videos/reel-7.mp4", tag: "REEL 07" },
-    { src: "assets/videos/reel-8.mp4", tag: "REEL 08" },
-    { src: "assets/videos/reel-9.mp4", tag: "HIGHLIGHT" },
+    { id: "1208013672", tag: "REEL 01" },
+    { id: "1208013671", tag: "REEL 02" },
+    { id: "1208013705", tag: "REEL 03" },
+    { id: "1208013697", tag: "REEL 04" },
+    { id: "1208013670", tag: "REEL 05" },
+    { id: "1208013698", tag: "REEL 06" },
+    { id: "1208013696", tag: "REEL 07" },
+    { id: "1208013707", tag: "REEL 08" },
+    { id: "1208013709", tag: "REEL 09" },
   ];
 
   /* scattered target rects (% of stage) — 3 × 3 ring with a featured centre.
@@ -207,23 +209,28 @@
       const inner = document.createElement("div");
       inner.className = "reel-inner";
 
-      const v = document.createElement("video");
-      v.src = r.src + MEDIA_BUST; v.muted = true; v.loop = true;
-      v.playsInline = true; v.preload = "auto";
-      v.setAttribute("playsinline", "");
+      const ifr = document.createElement("iframe");
+      ifr.src = "https://player.vimeo.com/video/" + r.id +
+                "?background=1&autoplay=1&loop=1&muted=1&playsinline=1";
+      ifr.setAttribute("frameborder", "0");
+      ifr.setAttribute("allow", "autoplay; fullscreen; picture-in-picture");
+      ifr.setAttribute("tabindex", "-1");
+      ifr.setAttribute("aria-hidden", "true");
+
+      const media = document.createElement("div");
+      media.className = "media-fill";
+      media.appendChild(ifr);
 
       const play = document.createElement("div");
       play.className = "play";
       play.innerHTML = '<svg viewBox="0 0 24 24" width="22" height="22"><path d="M8 5v14l11-7z" fill="#252525"/></svg>';
 
-      inner.appendChild(v); inner.appendChild(play);
+      inner.appendChild(media); inner.appendChild(play);
       reel.appendChild(inner);
       wrap.appendChild(reel);
 
-      inner.addEventListener("click", () => openLightbox(r.src, r.tag));
-      reelEls.push({ reel, video: v });
-      // start playback (muted autoplay)
-      v.play().catch(() => {});
+      inner.addEventListener("click", () => openLightbox(r.id, r.tag));
+      reelEls.push({ reel, frame: ifr });
     });
   }
 
@@ -266,20 +273,18 @@
      LIGHTBOX
      ============================================================ */
   const lb = document.getElementById("lightbox");
-  const lbVideo = document.getElementById("lbVideo");
-  function openLightbox(src, tag) {
-    lbVideo.src = src + MEDIA_BUST;
-    lbVideo.currentTime = 0;
+  const lbFrame = document.getElementById("lbFrame");
+  function openLightbox(id, tag) {
+    lbFrame.src = "https://player.vimeo.com/video/" + id +
+                  "?autoplay=1&title=0&byline=0&portrait=0&playsinline=1";
     lb.classList.add("open");
     lb.setAttribute("aria-hidden", "false");
     document.body.style.overflow = "hidden";
-    lbVideo.muted = false;
-    lbVideo.play().catch(() => {});
   }
   function closeLightbox() {
     lb.classList.remove("open");
     lb.setAttribute("aria-hidden", "true");
-    lbVideo.pause();
+    lbFrame.src = "about:blank";              // stop playback
     document.body.style.overflow = "";
   }
   document.getElementById("lbClose").addEventListener("click", closeLightbox);
@@ -331,7 +336,6 @@
   const showreel = document.getElementById("showreelMain");
   const heroWords = heroText ? heroText.querySelectorAll(".word") : [];
   const priceAmountEl = document.getElementById("priceAmount");
-  const showreelVid = showreel.querySelector("video");
   const scrollHint = document.getElementById("scrollHint");
 
   let lastP = -1;
@@ -411,18 +415,8 @@
     requestAnimationFrame(loop);
   }
 
-  /* play / pause showreel + reels based on hero visibility (saves decode work) */
-  function manageShowreel() {
-    const r = hero.getBoundingClientRect();
-    const inView = r.bottom > 0 && r.top < window.innerHeight;
-    if (inView) showreelVid.play().catch(() => {});
-    else showreelVid.pause();
-    for (let i = 0; i < reelEls.length; i++) {
-      const v = reelEls[i].video;
-      if (inView) { if (v.paused) v.play().catch(() => {}); }
-      else if (!v.paused) v.pause();
-    }
-  }
+  /* Vimeo background iframes autoplay/loop on their own — nothing to manage */
+  function manageShowreel() {}
 
   /* ============================================================
      INIT
@@ -515,8 +509,6 @@
     safe(setupPriceCounter);
     safe(() => { const y = document.getElementById("year"); if (y) y.textContent = new Date().getFullYear(); });
 
-    showreelVid.src = "assets/videos/showreel.mp4" + MEDIA_BUST;   // fresh on swap
-    showreelVid.play().catch(() => {});
     window.scrollTo(0, 0);                      // open at the beginning
     introStart = performance.now();             // begin page-open fade-in
     render();                                   // scroll engine — must always run
