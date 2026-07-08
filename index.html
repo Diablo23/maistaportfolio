@@ -7,7 +7,7 @@
 <meta name="description" content="Self-taught Web3 Motion Designer — showreel & portfolio." />
 <link rel="preconnect" href="https://api.fontshare.com" crossorigin />
 <link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700,900&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="css/styles.css?v=40" />
+<link rel="stylesheet" href="css/styles.css?v=41" />
 </head>
 <body>
 
@@ -34,8 +34,9 @@
       <div id="stage">
         <!-- Single showreel video (enter + first scroll) -->
         <figure class="showreel interactive" id="showreelMain">
-          <video src="assets/videos/showreel.mp4" poster="assets/videos/showreel-poster.jpg"
-                 muted loop playsinline autoplay preload="auto"></video>
+          <div class="media-fill"><iframe src="https://player.vimeo.com/video/1208013673?background=1&autoplay=1&loop=1&muted=1&playsinline=1"
+                  frameborder="0" allow="autoplay; fullscreen; picture-in-picture"
+                  tabindex="-1" aria-hidden="true"></iframe></div>
         </figure>
 
         <!-- Six reels that emerge from the showreel -->
@@ -153,7 +154,8 @@
       <svg viewBox="0 0 24 24" width="26" height="26"><path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>
     </button>
     <div class="lb-stage">
-      <video id="lbVideo" controls playsinline></video>
+      <iframe id="lbFrame" src="about:blank" frameborder="0"
+              allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>
     </div>
   </div>
 
@@ -162,6 +164,6 @@
     <path d="M0 0 L0 18 L4.5 13.8 L7.6 20.5 L10.2 19.4 L7.1 12.9 L13 12.9 Z"/>
   </svg>
 
-  <script src="js/main.js?v=40"></script>
+  <script src="js/main.js?v=41"></script>
 </body>
 </html>
