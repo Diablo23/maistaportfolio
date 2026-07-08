@@ -103,6 +103,7 @@ section{position:relative;z-index:1;pointer-events:none}
   color:var(--dark);
   width:88vw;text-align:center;            /* matches the showreel width */
   z-index:6;will-change:opacity,transform,top;
+  pointer-events:none;                     /* display text only — never block the reels beneath */
 }
 .hero-line{
   display:block;
@@ -138,6 +139,8 @@ section{position:relative;z-index:1;pointer-events:none}
 }
 .showreel .media-fill{position:absolute;inset:0;overflow:hidden;border-radius:12px;z-index:1}
 .reel .media-fill{position:absolute;inset:0;overflow:hidden;border-radius:10px;z-index:1}
+/* transparent overlay above the iframe so hover/cursor/click work over the whole tile */
+.reel-hit{position:absolute;inset:0;z-index:6}
 .showreel .media-fill iframe,.reel .media-fill iframe{position:absolute;inset:0;width:100%;height:100%;border:0;display:block;pointer-events:none}
 .showreel figcaption{
   position:absolute;inset:0;display:grid;place-items:center;
