@@ -271,23 +271,27 @@
      ============================================================ */
   function buildLogos() {
     const field = document.getElementById("logoField");
-    const names = ["NOVA", "AETH", "ZK·X", "ORBIT", "MNT", "LUMA", "PIXL", "DAO+"];
+    const names = ["NOVA", "AETH", "ZK·X", "ORBIT", "MNT", "LUMA", "PIXL", "DAO+", "FLUX"];
     const W = field.clientWidth || 1000;
-    const H = 340;
-    const cols = W < 640 ? 2 : 4;
+    const H = field.clientHeight || 340;
+    const cols = W < 420 ? 2 : 3;
     const rows = Math.ceil(names.length / cols);
     names.forEach((nm, i) => {
       const el = document.createElement("div");
       el.className = "logo interactive";
-      const size = rand(66, 94);
+      const r = Math.floor(i / cols);
+      // how many items sit in THIS row (last row may be partial → centre them)
+      const inRow = r < rows - 1 ? cols : names.length - (rows - 1) * cols;
+      const cInRow = i - r * cols;
+      const cellW = W / inRow, cellH = H / rows;
+      // size fits its cell so tiles never overlap or spill on any screen
+      let size = rand(66, 94);
+      size = Math.max(52, Math.min(size, cellW - 12, cellH - 12));
       el.style.width = size + "px";
       el.style.height = size + "px";
       el.style.fontSize = (size * 0.2).toFixed(0) + "px";
-      // jittered grid → spread evenly across the field, then nudge randomly
-      const c = i % cols, r = Math.floor(i / cols);
-      const cellW = W / cols, cellH = H / rows;
-      const x = c * cellW + (cellW - size) / 2 + rand(-cellW * 0.22, cellW * 0.22);
-      const y = r * cellH + (cellH - size) / 2 + rand(-cellH * 0.25, cellH * 0.25);
+      const x = cInRow * cellW + (cellW - size) / 2 + rand(-cellW * 0.16, cellW * 0.16);
+      const y = r * cellH + (cellH - size) / 2 + rand(-cellH * 0.2, cellH * 0.2);
       el.style.left = clamp(x, 0, W - size) + "px";
       el.style.top = clamp(y, 4, H - size - 4) + "px";
       el.style.setProperty("--t", rand(6, 11).toFixed(1) + "s");
@@ -357,10 +361,13 @@
       const ty = lerp(0, -235, s);                          // rise above the logos as it shrinks
       contribTitleInner.style.transform = `translateY(${ty.toFixed(1)}px) scale(${ts.toFixed(4)})`;
     }
-    // logos pop in (fade + un-blur), staggered
+    // logos pop in (fade + un-blur), staggered — spread across the scroll so
+    // every logo (any count) fully lands before the panel unpins
     const logos = logoFieldEl ? logoFieldEl.children : [];
-    for (let i = 0; i < logos.length; i++) {
-      const lp = smoothstep(0.48 + i * 0.04, 0.82 + i * 0.04, p);
+    const n = logos.length;
+    for (let i = 0; i < n; i++) {
+      const st = 0.42 + 0.30 * (n > 1 ? i / (n - 1) : 0);
+      const lp = smoothstep(st, st + 0.18, p);
       logos[i].style.opacity = lp.toFixed(3);
       logos[i].style.filter = lp > 0.99 ? "none" : `blur(${((1 - lp) * 9).toFixed(1)}px)`;
     }
