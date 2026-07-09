@@ -198,6 +198,10 @@ section{position:relative;z-index:1;pointer-events:none}
 .reel:nth-child(7) .reel-inner::before{animation-delay:-3.6s}
 .reel:nth-child(8) .reel-inner::before{animation-delay:-4.2s}
 .reel:nth-child(9) .reel-inner::before{animation-delay:-4.8s}
+/* the ribbon (conic-gradient + mask + drop-shadow) is expensive; keep it OFF while the
+   reels are big and scattering, fade it in only once they've settled into tiles */
+.reel-inner::before{opacity:0;animation-play-state:paused;transition:opacity .5s var(--ease)}
+#stage.live .reel-inner::before{opacity:1;animation-play-state:running}
 .reel-inner::after{
   content:"";position:absolute;inset:0;
   background:linear-gradient(180deg,transparent 55%,rgba(0,0,0,.35));
