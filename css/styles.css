@@ -141,7 +141,7 @@ section{position:relative;z-index:1;pointer-events:none}
   will-change:left,top,width,height,opacity;
 }
 .showreel .media-fill{position:absolute;inset:0;overflow:hidden;border-radius:12px;z-index:1}
-.reel .media-fill{position:absolute;inset:0;overflow:hidden;border-radius:10px;z-index:1}
+.reel .media-fill{position:absolute;inset:0;overflow:hidden;border-radius:10px;z-index:1;clip-path:inset(0 round 10px)}
 /* transparent overlay above the iframe so hover/cursor/click work over the whole tile */
 .reel-hit{position:absolute;inset:0;z-index:6}
 /* both the showreel and reel iframes are sized in JS to COVER their frame; centre them
@@ -175,11 +175,11 @@ section{position:relative;z-index:1;pointer-events:none}
   content:"";position:absolute;inset:0;border-radius:inherit;
   pointer-events:none;z-index:3;padding:2.5px;
   background:conic-gradient(from var(--ribbon),
-     rgba(255,162,62,.5) 0deg,
-     rgba(255,162,62,.5) 52deg,
+     #e07d18 0deg,
+     #e07d18 52deg,
      #ffd9a0 80deg, #fff5e6 96deg, #ffc26e 114deg,   /* bright travelling ribbon */
-     rgba(255,162,62,.5) 150deg,
-     rgba(255,162,62,.5) 360deg);
+     #e07d18 150deg,
+     #e07d18 360deg);
   -webkit-mask:linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
   -webkit-mask-composite:xor;
           mask:linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
@@ -208,7 +208,7 @@ section{position:relative;z-index:1;pointer-events:none}
   opacity:0;transition:opacity .4s var(--ease);
 }
 .reel-inner .play{
-  position:absolute;left:50%;top:50%;width:3.375rem;height:3.375rem;
+  position:absolute;left:50%;top:50%;width:3.375rem;height:3.375rem;z-index:5;
   transform:translate(-50%,-50%) scale(.6);
   border-radius:50%;background:rgba(255,141,27,.92);
   display:grid;place-items:center;opacity:0;
