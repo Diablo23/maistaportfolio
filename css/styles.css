@@ -141,7 +141,19 @@ section{position:relative;z-index:1;pointer-events:none}
   will-change:left,top,width,height,opacity;
 }
 .showreel .media-fill{position:absolute;inset:0;overflow:hidden;border-radius:12px;z-index:1}
-.reel .media-fill{position:absolute;inset:0;overflow:hidden;border-radius:10px;z-index:1;clip-path:inset(0 round 10px)}
+.reel .media-fill{position:absolute;inset:0;overflow:hidden;border-radius:10px;z-index:1;clip-path:inset(0 round 10px);opacity:0;visibility:hidden;transition:opacity .55s ease}
+/* while the reels are big + flying apart they show only the orange gradient (video hidden →
+   9 fullscreen videos aren't drawn = no lag); once settled, the videos fade in ONE BY ONE */
+#stage.live .reel .media-fill{opacity:1;visibility:visible}
+#stage.live .reel:nth-child(1) .media-fill{transition-delay:.05s}
+#stage.live .reel:nth-child(2) .media-fill{transition-delay:.14s}
+#stage.live .reel:nth-child(3) .media-fill{transition-delay:.23s}
+#stage.live .reel:nth-child(4) .media-fill{transition-delay:.32s}
+#stage.live .reel:nth-child(5) .media-fill{transition-delay:.41s}
+#stage.live .reel:nth-child(6) .media-fill{transition-delay:.50s}
+#stage.live .reel:nth-child(7) .media-fill{transition-delay:.59s}
+#stage.live .reel:nth-child(8) .media-fill{transition-delay:.68s}
+#stage.live .reel:nth-child(9) .media-fill{transition-delay:.77s}
 /* transparent overlay above the iframe so hover/cursor/click work over the whole tile */
 .reel-hit{position:absolute;inset:0;z-index:6}
 /* both the showreel and reel iframes are sized in JS to COVER their frame; centre them
@@ -180,7 +192,7 @@ section{position:relative;z-index:1;pointer-events:none}
 .reel:nth-child(9)::before{animation-delay:-2.8s}
 .reel-inner{
   position:absolute;inset:0;border-radius:10px;overflow:hidden;
-  background:var(--dark);
+  background:linear-gradient(135deg,#ffa845 0%,var(--orange) 46%,var(--orange-deep) 100%);
   box-shadow:
     inset 0 0 0 2.5px #ffb340,                        /* crisp orange edge — brighter + a touch thicker */
     0 24px 60px -30px rgba(0,0,0,.55),
