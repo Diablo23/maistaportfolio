@@ -144,9 +144,9 @@ section{position:relative;z-index:1;pointer-events:none}
 .reel .media-fill{position:absolute;inset:0;overflow:hidden;border-radius:10px;z-index:1}
 /* transparent overlay above the iframe so hover/cursor/click work over the whole tile */
 .reel-hit{position:absolute;inset:0;z-index:6}
-.showreel .media-fill iframe,.reel .media-fill iframe{position:absolute;inset:0;width:100%;height:100%;border:0;display:block;pointer-events:none}
-/* the showreel iframe is sized in JS to COVER its frame; centre it so the overflow crops evenly */
-.showreel .media-fill iframe{inset:auto;left:50%;top:50%;transform:translate(-50%,-50%);width:auto;height:auto}
+/* both the showreel and reel iframes are sized in JS to COVER their frame; centre them
+   so the overflow crops evenly (frame clips via .media-fill overflow:hidden) */
+.showreel .media-fill iframe,.reel .media-fill iframe{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);border:0;display:block;pointer-events:none}
 .showreel figcaption{
   position:absolute;inset:0;display:grid;place-items:center;
   font-family:"Satoshi",sans-serif;font-weight:600;
