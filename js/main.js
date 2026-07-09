@@ -57,7 +57,6 @@
 
   // each reel's video aspect ratio (width/height), filled from Vimeo on load
   const reelAR = new Array(REELS.length).fill(null);
-  let showreelAR = null;                         // showreel's own aspect, from Vimeo
   const DEFAULT_AR = 16 / 9;
   // largest rect of the given aspect that fits inside a slot box, centred in it
   function fitInSlot(slot, ar, sW, sH) {
@@ -83,21 +82,11 @@
       s.src = "https://vimeo.com/api/oembed.json?url=https%3A%2F%2Fvimeo.com%2F" + reel.id + "&callback=" + cb;
       document.head.appendChild(s);
     });
-    // showreel too, so its frame can match the video (no letterbox at fullscreen)
-    const ss = document.createElement("script");
-    const scb = "voe_showreel";
-    window[scb] = function (data) {
-      if (data && data.width && data.height) showreelAR = data.width / data.height;
-      try { delete window[scb]; } catch (e) {}
-      ss.remove();
-    };
-    ss.onerror = function () { try { delete window[scb]; } catch (e) {} ss.remove(); };
-    ss.src = "https://vimeo.com/api/oembed.json?url=https%3A%2F%2Fvimeo.com%2F" + SHOWREEL_ID + "&callback=" + scb;
-    document.head.appendChild(ss);
   }
 
   const ENTER = { l: 6, t: 40, w: 88, h: 54 };   // showreel on enter
-  const FULL  = { l: 4, t: 6,  w: 92, h: 88 };   // showreel fullscreen / merge point
+  const FULL  = { l: 4, t: 6,  w: 92, h: 88 };   // reels' emerge area
+  const SR_FULL = { l: 0, t: 0, w: 100, h: 100 };// showreel at fullscreen — edge to edge
 
   const lerpRect = (A, B, t) => ({
     l: lerp(A.l, B.l, t), t: lerp(A.t, B.t, t),
@@ -385,6 +374,7 @@
     }
   }
   const showreel = document.getElementById("showreelMain");
+  const showreelMedia = showreel ? showreel.querySelector(".media-fill") : null;
   const heroWords = heroText ? heroText.querySelectorAll(".word") : [];
   const priceAmountEl = document.getElementById("priceAmount");
   const scrollHint = document.getElementById("scrollHint");
@@ -409,14 +399,13 @@
     const sH = stage.clientHeight || window.innerHeight;
 
     // showreel grow (enter -> fullscreen). Reaches full by p≈0.34, then HOLDS (scroll stop)
-    // frame is kept at the showreel VIDEO's aspect the whole time, so the video always
-    // fills it exactly (no letterbox/pillarbox) — both endpoints share one aspect, so
-    // lerping between them preserves that aspect on every frame.
+    // it COVERS the screen edge-to-edge (background=1 crops to fill → no bars). Corners
+    // round when it's a small card and square off as it fills the viewport.
     const grow = smoothstep(0.10, 0.34, p);
-    const srAR = showreelAR || DEFAULT_AR;
-    const srEnter = fitInSlot(ENTER, srAR, sW, sH);
-    const srFull  = fitInSlot(FULL,  srAR, sW, sH);
-    applyRect(showreel, lerpRect(srEnter, srFull, easeInOut(grow)));
+    applyRect(showreel, lerpRect(ENTER, SR_FULL, easeInOut(grow)));
+    const srRadius = (12 * (1 - grow)).toFixed(1) + "px";
+    showreel.style.borderRadius = srRadius;
+    if (showreelMedia) showreelMedia.style.borderRadius = srRadius;
 
     // title: rises upward and fades out gently AS the showreel begins (smooth crossfade)
     const rise = smoothstep(0, 0.18, p);
@@ -496,7 +485,7 @@
     const range = document.createRange();
     range.selectNodeContents(l2);
     const tw = range.getBoundingClientRect().width || 1;
-    const target = Math.min(sr.getBoundingClientRect().width, window.innerWidth * 0.94);
+    const target = window.innerWidth * 0.92;               // ~full width, independent of the showreel
     const ratio = tw > target ? target / tw : 1;
     ht.style.setProperty("--tscale", ratio.toFixed(3));
   }
