@@ -43,6 +43,9 @@ section{position:relative;z-index:1;pointer-events:none}
   will-change:opacity,translate,filter;
 }
 .reveal.in{opacity:1;translate:0 0;filter:blur(0)}
+/* once the reveal animation is done, drop the GPU layer + filter pass so text
+   re-rasterizes crisp (no cached/upscaled bitmap → no random pixelation) */
+.reveal.settled{will-change:auto;filter:none}
 .reveal.d1{transition-delay:.08s}
 .reveal.d2{transition-delay:.16s}
 .reveal.d3{transition-delay:.24s}
@@ -379,7 +382,7 @@ section{position:relative;z-index:1;pointer-events:none}
 /* social-package dual rates */
 .plan-rate{display:flex;align-items:baseline;gap:10px;margin-top:10px}
 .plan-rate:first-of-type{margin-top:0}
-.rate-label{font-size:.75rem;letter-spacing:.04em;text-transform:uppercase;color:#9b9b9b;min-width:3.875rem}
+.rate-label{font-size:.75rem;letter-spacing:.04em;text-transform:uppercase;color:#9b9b9b;min-width:6.25rem}
 .rate-amt{font-family:"Satoshi",sans-serif;font-weight:900;font-size:clamp(1.25rem,2vw,1.625rem);color:#fff}
 .rate-amt + em, .rate-amt ~ em{font-style:normal;color:#9b9b9b;font-size:13px;margin-left:4px}
 .plan-rate em{font-style:normal;color:#9b9b9b;font-size:13px;margin-left:4px}
