@@ -513,9 +513,22 @@
   function setupReveals() {
     const els = document.querySelectorAll(".reveal");
     if (!("IntersectionObserver" in window)) {
-      els.forEach((e) => e.classList.add("in"));
+      els.forEach((e) => { e.classList.add("in"); e.classList.add("settled"); });
       return;
     }
+    // reveal, then once the blur transition finishes drop the GPU layer so the
+    // element re-rasterizes crisp (kills the random pixelation on the cards)
+    const reveal = (el) => {
+      el.classList.add("in");
+      const settle = (ev) => {
+        if (ev && ev.propertyName !== "filter") return;
+        el.classList.add("settled");
+        el.removeEventListener("transitionend", settle);
+      };
+      el.addEventListener("transitionend", settle);
+      // fallback in case transitionend never fires (e.g. reduced-motion)
+      setTimeout(() => settle(), 1600);
+    };
     const io = new IntersectionObserver((ents) => {
       ents.forEach((e) => {
         if (!e.isIntersecting) return;
@@ -523,9 +536,9 @@
         if (el.classList.contains("plan")) {
           // reveal the pricing cards one by one (bottom-up rise + un-blur)
           const idx = Array.prototype.indexOf.call(el.parentNode.children, el);
-          setTimeout(() => el.classList.add("in"), idx * 160);
+          setTimeout(() => reveal(el), idx * 160);
         } else {
-          el.classList.add("in");
+          reveal(el);
         }
         io.unobserve(el);
       });
