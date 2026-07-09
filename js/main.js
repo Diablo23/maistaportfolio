@@ -443,7 +443,10 @@
     applyRect(showreel, srRect);
     const srRadius = (12 * (1 - grow)).toFixed(1) + "px";
     showreel.style.borderRadius = srRadius;
-    if (showreelMedia) showreelMedia.style.borderRadius = srRadius;
+    if (showreelMedia) {
+      showreelMedia.style.borderRadius = srRadius;
+      showreelMedia.style.clipPath = "inset(0 round " + srRadius + ")";
+    }
     if (showreelIframe) {
       const fw = (srRect.w / 100) * sW, fh = (srRect.h / 100) * sH;
       const arS = showreelAR || DEFAULT_AR;
