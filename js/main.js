@@ -135,8 +135,7 @@
     }
     reelEls.forEach((o, i) => {
       if (!o.frame) return;
-      const cw = (GRID[i].w / 100) * sW, ch = (GRID[i].h / 100) * sH;
-      const b = coverBox(cw, ch, reelAR[i] || DEFAULT_AR);   // cover the grid cell (largest a reel renders)
+      const b = coverBox(sW, sH, reelAR[i] || DEFAULT_AR);   // fullscreen cover — reels start as big as the showreel
       o.frame.style.width = b.w.toFixed(1) + "px";
       o.frame.style.height = b.h.toFixed(1) + "px";
     });
@@ -512,18 +511,16 @@
     reelEls.forEach((o, i) => {
       const qi = easeInOut(smoothstep(0.54 + i * 0.012, 0.86, p));
       const arI = reelAR[i] || DEFAULT_AR;
-      // Reels START filling a screen-filling 3×3 grid EDGE-TO-EDGE (each video COVERS its
-      // cell → the full screen reassembles out of 9 pieces exactly where the showreel was,
-      // then the pieces shrink + fly apart = the showreel "splitting into 9"). Each piece
-      // only renders at ~1/3 screen, so it stays light. Ends as a whole-video tile.
-      const start  = GRID[i];                                   // full cell (cover-filled)
+      // Reels START fullscreen — as big as the showreel — stacked, so it reads as the
+      // showreel splitting into 9; they only shrink + scatter to their tiles as you scroll on.
+      const start  = SR_FULL;
       const target = fitByArea(SCATTER[i], arI, sW, sH);
       const r = lerpRect(start, target, qi);
       applyRect(o.reel, r);
       o.reel.style.opacity = reelsIn;
       if (o.frame) {
-        // iframe base = cover of the cell (set in sizeBaseIframes); scale to cover the current frame
-        const baseW = coverBox((start.w / 100) * sW, (start.h / 100) * sH, arI).w;
+        // iframe base = fullscreen cover (set in sizeBaseIframes); scale to cover the current frame
+        const baseW = coverBox(sW, sH, arI).w;
         const curW  = coverBox((r.w / 100) * sW, (r.h / 100) * sH, arI).w;
         const k = baseW > 0 ? curW / baseW : 1;                 // ≤1 → downscale, stays crisp
         o.frame.style.transform = "translate(-50%,-50%) scale(" + k.toFixed(4) + ")";
