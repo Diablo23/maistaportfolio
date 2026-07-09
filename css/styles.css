@@ -283,7 +283,8 @@ section{position:relative;z-index:1;pointer-events:none}
   transform:translateY(0) scale(.38);
 }
 .logo-field{
-  position:relative;height:clamp(17rem,44vh,21.25rem);width:100%;max-width:68.75rem;margin:0 auto;
+  position:relative;height:clamp(19rem,50vh,23rem);width:100%;max-width:68.75rem;
+  margin:clamp(4.5rem,10vh,7rem) auto 0;   /* nudged down so it clears the title */
 }
 .logo{
   position:absolute;display:grid;place-items:center;
