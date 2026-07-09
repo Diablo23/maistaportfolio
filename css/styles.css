@@ -159,13 +159,31 @@ section{position:relative;z-index:1;pointer-events:none}
 .reel{
   position:absolute;will-change:left,top,width,height,transform;
 }
+/* dynamic orange glow around each settled tile (on .reel, which isn't overflow-clipped);
+   pulses via opacity only, so it's compositor-cheap. Off while scattering. */
+.reel::before{
+  content:"";position:absolute;inset:-3px;border-radius:13px;z-index:-1;
+  box-shadow:0 0 28px 5px rgba(255,150,40,.6);
+  pointer-events:none;opacity:0;
+}
+#stage.live .reel::before{animation:reelGlow 3.2s ease-in-out infinite}
+#stage.live .reel:hover::before{animation:none;opacity:0}
+@keyframes reelGlow{0%,100%{opacity:.4}50%{opacity:.9}}
+.reel:nth-child(2)::before{animation-delay:-.5s}
+.reel:nth-child(3)::before{animation-delay:-1s}
+.reel:nth-child(4)::before{animation-delay:-1.5s}
+.reel:nth-child(5)::before{animation-delay:-2s}
+.reel:nth-child(6)::before{animation-delay:-2.5s}
+.reel:nth-child(7)::before{animation-delay:-.8s}
+.reel:nth-child(8)::before{animation-delay:-1.8s}
+.reel:nth-child(9)::before{animation-delay:-2.8s}
 .reel-inner{
   position:absolute;inset:0;border-radius:10px;overflow:hidden;
   background:var(--dark);
   box-shadow:
-    inset 0 0 0 2px #ffa236,                         /* crisp orange edge — vector, never pixelates */
+    inset 0 0 0 2.5px #ffb340,                       /* crisp orange edge — brighter + a touch thicker */
     0 24px 60px -30px rgba(0,0,0,.55),
-    0 0 30px 0 rgba(255,170,70,.5);                  /* warm outer glow */
+    0 0 26px 0 rgba(255,150,40,.45);                 /* warm base glow (the pulse is on .reel::before) */
   transition:transform .45s var(--ease),box-shadow .45s var(--ease);
   cursor:pointer;
 }
@@ -219,7 +237,7 @@ section{position:relative;z-index:1;pointer-events:none}
 .reel-inner .play svg{margin-left:3px}
 /* hover zoom 1.3x — only when stage is live (scattered) */
 #stage.live .reel:hover{z-index:300}            /* lift whole tile above every sibling */
-#stage.live .reel-inner:hover{transform:scale(1.3);box-shadow:inset 0 0 0 2px #ffb44e, 0 40px 90px -30px rgba(0,0,0,.6), 0 0 50px 2px rgba(255,170,70,.6)}
+#stage.live .reel-inner:hover{transform:scale(1.3);box-shadow:inset 0 0 0 3px #ffc266, 0 40px 90px -30px rgba(0,0,0,.6), 0 0 60px 4px rgba(255,160,50,.75)}
 #stage.live .reel-inner:hover::after{opacity:1}
 #stage.live .reel-inner:hover .play{opacity:1;transform:translate(-50%,-50%) scale(1)}
 #stage:not(.live) .reel{pointer-events:none}
