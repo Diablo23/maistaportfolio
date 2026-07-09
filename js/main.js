@@ -453,14 +453,20 @@
     const t = performance.now() / 1000;
     reelEls.forEach((o, i) => {
       const qi = easeInOut(smoothstep(0.54 + i * 0.012, 0.86, p));
-      // Reels START at fullscreen size (matching the showreel) and only shrink as they
-      // scatter — so the split reads as the showreel breaking apart, not a size jump.
-      // Both endpoints share the reel's aspect, so it's preserved the whole way.
-      const start  = fitInSlot(SR_FULL, reelAR[i], sW, sH);
+      // Reels START edge-to-edge (exactly like the fullscreen showreel) and morph into
+      // their video-aspect tiles as they scatter — no size jump. The iframe cover-fits
+      // its frame at every step: full-bleed while big, exact fit once it's a tile.
+      const start  = SR_FULL;
       const target = fitInSlot(SCATTER[i], reelAR[i], sW, sH);
       const r = lerpRect(start, target, qi);
       applyRect(o.reel, r);
       o.reel.style.opacity = reelsIn;
+      if (o.frame) {
+        const rw = (r.w / 100) * sW, rh = (r.h / 100) * sH;
+        const cb = coverBox(rw, rh, reelAR[i] || DEFAULT_AR);
+        o.frame.style.width = cb.w.toFixed(1) + "px";
+        o.frame.style.height = cb.h.toFixed(1) + "px";
+      }
       // gentle chaotic float + tilt once scattered (still levitating)
       const amp = 10 * qi;
       const fx = Math.sin(t * 0.7 + i * 1.3) * amp;
