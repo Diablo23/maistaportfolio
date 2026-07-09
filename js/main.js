@@ -297,6 +297,7 @@
       const reel = document.createElement("div");
       reel.className = "reel interactive";
       reel.dataset.index = i;
+      reel.style.zIndex = i + 1;                 // stable stacking → no z-fighting flicker while stacked
 
       const inner = document.createElement("div");
       inner.className = "reel-inner";
