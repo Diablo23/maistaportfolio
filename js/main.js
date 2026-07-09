@@ -57,6 +57,7 @@
 
   // each reel's video aspect ratio (width/height), filled from Vimeo on load
   const reelAR = new Array(REELS.length).fill(null);
+  let showreelAR = null;                         // showreel's own aspect, from Vimeo
   const DEFAULT_AR = 16 / 9;
   // largest rect of the given aspect that fits inside a slot box, centred in it
   function fitInSlot(slot, ar, sW, sH) {
@@ -82,6 +83,17 @@
       s.src = "https://vimeo.com/api/oembed.json?url=https%3A%2F%2Fvimeo.com%2F" + reel.id + "&callback=" + cb;
       document.head.appendChild(s);
     });
+    // showreel too, so its frame can match the video (no letterbox at fullscreen)
+    const ss = document.createElement("script");
+    const scb = "voe_showreel";
+    window[scb] = function (data) {
+      if (data && data.width && data.height) showreelAR = data.width / data.height;
+      try { delete window[scb]; } catch (e) {}
+      ss.remove();
+    };
+    ss.onerror = function () { try { delete window[scb]; } catch (e) {} ss.remove(); };
+    ss.src = "https://vimeo.com/api/oembed.json?url=https%3A%2F%2Fvimeo.com%2F" + SHOWREEL_ID + "&callback=" + scb;
+    document.head.appendChild(ss);
   }
 
   const ENTER = { l: 6, t: 40, w: 88, h: 54 };   // showreel on enter
@@ -392,9 +404,19 @@
     const introVideo = interacted ? 1 : smootherstep(elapsed / 1800);            // ~1.8s
     const introText  = interacted ? 1 : smootherstep((elapsed - 350) / 1800);    // starts 0.35s later
 
+    // stage dimensions (used for aspect-fitting the showreel + reels)
+    const sW = stage.clientWidth || window.innerWidth;
+    const sH = stage.clientHeight || window.innerHeight;
+
     // showreel grow (enter -> fullscreen). Reaches full by p≈0.34, then HOLDS (scroll stop)
+    // frame is kept at the showreel VIDEO's aspect the whole time, so the video always
+    // fills it exactly (no letterbox/pillarbox) — both endpoints share one aspect, so
+    // lerping between them preserves that aspect on every frame.
     const grow = smoothstep(0.10, 0.34, p);
-    applyRect(showreel, lerpRect(ENTER, FULL, easeInOut(grow)));
+    const srAR = showreelAR || DEFAULT_AR;
+    const srEnter = fitInSlot(ENTER, srAR, sW, sH);
+    const srFull  = fitInSlot(FULL,  srAR, sW, sH);
+    applyRect(showreel, lerpRect(srEnter, srFull, easeInOut(grow)));
 
     // title: rises upward and fades out gently AS the showreel begins (smooth crossfade)
     const rise = smoothstep(0, 0.18, p);
@@ -413,12 +435,13 @@
 
     // scatter the six reels (0.54 → 0.86), then HOLD scattered 0.86–1.0 (STOP)
     const t = performance.now() / 1000;
-    const sW = stage.clientWidth || window.innerWidth;
-    const sH = stage.clientHeight || window.innerHeight;
     reelEls.forEach((o, i) => {
       const qi = easeInOut(smoothstep(0.54 + i * 0.012, 0.86, p));
+      // BOTH endpoints are the reel's own aspect (fit inside the full area / the slot),
+      // so the frame matches the video for the entire journey, not just when settled.
+      const start  = fitInSlot(FULL, reelAR[i], sW, sH);
       const target = fitInSlot(SCATTER[i], reelAR[i], sW, sH);
-      const r = lerpRect(FULL, target, qi);
+      const r = lerpRect(start, target, qi);
       applyRect(o.reel, r);
       o.reel.style.opacity = reelsIn;
       // gentle chaotic float + tilt once scattered (still levitating)
