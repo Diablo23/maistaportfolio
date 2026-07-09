@@ -158,6 +158,7 @@ section{position:relative;z-index:1;pointer-events:none}
 #reels{position:absolute;inset:0}
 .reel{
   position:absolute;will-change:left,top,width,height,transform;
+  backface-visibility:hidden;-webkit-backface-visibility:hidden;isolation:isolate;
 }
 /* dynamic orange glow around each settled tile (on .reel, which isn't overflow-clipped);
    pulses via opacity only, so it's compositor-cheap. Off while scattering. */
