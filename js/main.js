@@ -69,6 +69,23 @@
     const w = (fw / sW) * 100, h = (fh / sH) * 100;
     return { l: slot.l + (slot.w - w) / 2, t: slot.t + (slot.h - h) / 2, w, h };
   }
+  // like fitInSlot, but sizes every tile to the SAME visual AREA (that of a 16:9 tile in
+  // this slot) — so 4:3 videos don't look smaller than 16:9 ones. Keeps each tile centred
+  // in its slot; caps height so a near-square clip can't overflow into its neighbours.
+  function fitByArea(slot, ar, sW, sH) {
+    ar = ar || DEFAULT_AR;
+    const boxW = (slot.w / 100) * sW, boxH = (slot.h / 100) * sH;
+    // reference area = a 16:9 tile fitted in this slot (16:9 tiles stay exactly as before)
+    let rw, rh;
+    if (boxW / boxH > DEFAULT_AR) { rh = boxH; rw = boxH * DEFAULT_AR; }
+    else { rw = boxW; rh = boxW / DEFAULT_AR; }
+    const area = rw * rh;
+    let fh = Math.sqrt(area / ar), fw = Math.sqrt(area * ar);
+    const cap = boxH * 1.3;                                 // don't grow taller than ~1.3× the slot
+    if (fh > cap) { fh = cap; fw = fh * ar; }
+    const w = (fw / sW) * 100, h = (fh / sH) * 100;
+    return { l: slot.l + (slot.w - w) / 2, t: slot.t + (slot.h - h) / 2, w, h };
+  }
   // ask Vimeo for each video's real dimensions (oEmbed via JSONP), then reshape its frame
   function loadReelAspects() {
     REELS.forEach((reel, i) => {
@@ -488,7 +505,7 @@
       // their video-aspect tiles as they scatter — no size jump. The iframe cover-fits
       // its frame at every step: full-bleed while big, exact fit once it's a tile.
       const start  = SR_FULL;
-      const target = fitInSlot(SCATTER[i], reelAR[i], sW, sH);
+      const target = fitByArea(SCATTER[i], reelAR[i], sW, sH);
       const r = lerpRect(start, target, qi);
       applyRect(o.reel, r);
       o.reel.style.opacity = reelsIn;
