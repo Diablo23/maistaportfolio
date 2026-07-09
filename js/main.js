@@ -311,26 +311,37 @@
     const names = ["NOVA", "AETH", "ZK·X", "ORBIT", "MNT", "LUMA", "PIXL", "DAO+", "FLUX"];
     const W = field.clientWidth || 1000;
     const H = field.clientHeight || 340;
-    const cols = W < 420 ? 2 : 3;
-    const rows = Math.ceil(names.length / cols);
+    const pad = 6;
+    const placed = [];   // {x,y,r} centres already taken
+
+    // Best-candidate ("dart throwing") scatter: for each logo, try several random spots
+    // and keep the one that sits FARTHEST from all others. Gives an organic, evenly-spread
+    // layout — no rigid rows, harmonious spacing, and effectively no overlaps.
     names.forEach((nm, i) => {
+      const size = rand(64, 92);
+      const rad = size / 2;
+      let best = null, bestScore = -Infinity;
+      const tries = 40;
+      for (let k = 0; k < tries; k++) {
+        const cx = rand(rad + pad, W - rad - pad);
+        const cy = rand(rad + pad, H - rad - pad);
+        let nearest = Infinity;
+        for (const p of placed) {
+          const gap = Math.hypot(cx - p.x, cy - p.y) - (rad + p.r);   // edge-to-edge distance
+          if (gap < nearest) nearest = gap;
+        }
+        const score = placed.length ? nearest : rand(0, 1);           // first one: anywhere
+        if (score > bestScore) { bestScore = score; best = { x: cx, y: cy, r: rad }; }
+      }
+      placed.push(best);
+
       const el = document.createElement("div");
       el.className = "logo interactive";
-      const r = Math.floor(i / cols);
-      // how many items sit in THIS row (last row may be partial → centre them)
-      const inRow = r < rows - 1 ? cols : names.length - (rows - 1) * cols;
-      const cInRow = i - r * cols;
-      const cellW = W / inRow, cellH = H / rows;
-      // size fits its cell so tiles never overlap or spill on any screen
-      let size = rand(66, 94);
-      size = Math.max(52, Math.min(size, cellW - 12, cellH - 12));
       el.style.width = size + "px";
       el.style.height = size + "px";
       el.style.fontSize = (size * 0.2).toFixed(0) + "px";
-      const x = cInRow * cellW + (cellW - size) / 2 + rand(-cellW * 0.16, cellW * 0.16);
-      const y = r * cellH + (cellH - size) / 2 + rand(-cellH * 0.2, cellH * 0.2);
-      el.style.left = clamp(x, 0, W - size) + "px";
-      el.style.top = clamp(y, 4, H - size - 4) + "px";
+      el.style.left = (best.x - rad).toFixed(1) + "px";
+      el.style.top = (best.y - rad).toFixed(1) + "px";
       el.style.setProperty("--t", rand(6, 11).toFixed(1) + "s");
       el.style.setProperty("--lx", rand(-16, 16).toFixed(1) + "px");
       el.style.setProperty("--ly", rand(-20, 14).toFixed(1) + "px");
