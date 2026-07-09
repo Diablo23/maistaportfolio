@@ -57,6 +57,7 @@
 
   // each reel's video aspect ratio (width/height), filled from Vimeo on load
   const reelAR = new Array(REELS.length).fill(null);
+  let showreelAR = null;                         // showreel aspect (from Vimeo) — for cover-fit
   const DEFAULT_AR = 16 / 9;
   // largest rect of the given aspect that fits inside a slot box, centred in it
   function fitInSlot(slot, ar, sW, sH) {
@@ -82,6 +83,24 @@
       s.src = "https://vimeo.com/api/oembed.json?url=https%3A%2F%2Fvimeo.com%2F" + reel.id + "&callback=" + cb;
       document.head.appendChild(s);
     });
+    // showreel aspect too, so we can force it to COVER the screen (no side bars)
+    const ss = document.createElement("script");
+    const scb = "voe_showreel";
+    window[scb] = function (data) {
+      if (data && data.width && data.height) showreelAR = data.width / data.height;
+      try { delete window[scb]; } catch (e) {}
+      ss.remove();
+    };
+    ss.onerror = function () { try { delete window[scb]; } catch (e) {} ss.remove(); };
+    ss.src = "https://vimeo.com/api/oembed.json?url=https%3A%2F%2Fvimeo.com%2F" + SHOWREEL_ID + "&callback=" + scb;
+    document.head.appendChild(ss);
+  }
+  // largest rect of the given aspect that COVERS a box (fills it, cropping overflow)
+  function coverBox(boxW, boxH, ar) {
+    ar = ar || DEFAULT_AR;
+    return boxW / boxH >= ar
+      ? { w: boxW, h: boxW / ar }     // box wider → match width, overflow height
+      : { w: boxH * ar, h: boxH };    // box taller → match height, overflow width
   }
 
   const ENTER = { l: 6, t: 40, w: 88, h: 54 };   // showreel on enter
@@ -375,6 +394,7 @@
   }
   const showreel = document.getElementById("showreelMain");
   const showreelMedia = showreel ? showreel.querySelector(".media-fill") : null;
+  const showreelIframe = showreelMedia ? showreelMedia.querySelector("iframe") : null;
   const heroWords = heroText ? heroText.querySelectorAll(".word") : [];
   const priceAmountEl = document.getElementById("priceAmount");
   const scrollHint = document.getElementById("scrollHint");
@@ -399,13 +419,20 @@
     const sH = stage.clientHeight || window.innerHeight;
 
     // showreel grow (enter -> fullscreen). Reaches full by p≈0.34, then HOLDS (scroll stop)
-    // it COVERS the screen edge-to-edge (background=1 crops to fill → no bars). Corners
-    // round when it's a small card and square off as it fills the viewport.
+    // The frame goes edge-to-edge; the iframe is oversized to the video's aspect so the
+    // video COVERS the frame (Vimeo's own fill letterboxes on wide screens, so we force it).
     const grow = smoothstep(0.10, 0.34, p);
-    applyRect(showreel, lerpRect(ENTER, SR_FULL, easeInOut(grow)));
+    const srRect = lerpRect(ENTER, SR_FULL, easeInOut(grow));
+    applyRect(showreel, srRect);
     const srRadius = (12 * (1 - grow)).toFixed(1) + "px";
     showreel.style.borderRadius = srRadius;
     if (showreelMedia) showreelMedia.style.borderRadius = srRadius;
+    if (showreelIframe) {
+      const fw = (srRect.w / 100) * sW, fh = (srRect.h / 100) * sH;
+      const cb = coverBox(fw, fh, showreelAR || DEFAULT_AR);
+      showreelIframe.style.width = cb.w.toFixed(1) + "px";
+      showreelIframe.style.height = cb.h.toFixed(1) + "px";
+    }
 
     // title: rises upward and fades out gently AS the showreel begins (smooth crossfade)
     const rise = smoothstep(0, 0.18, p);
@@ -426,9 +453,10 @@
     const t = performance.now() / 1000;
     reelEls.forEach((o, i) => {
       const qi = easeInOut(smoothstep(0.54 + i * 0.012, 0.86, p));
-      // BOTH endpoints are the reel's own aspect (fit inside the full area / the slot),
-      // so the frame matches the video for the entire journey, not just when settled.
-      const start  = fitInSlot(FULL, reelAR[i], sW, sH);
+      // Reels START at fullscreen size (matching the showreel) and only shrink as they
+      // scatter — so the split reads as the showreel breaking apart, not a size jump.
+      // Both endpoints share the reel's aspect, so it's preserved the whole way.
+      const start  = fitInSlot(SR_FULL, reelAR[i], sW, sH);
       const target = fitInSlot(SCATTER[i], reelAR[i], sW, sH);
       const r = lerpRect(start, target, qi);
       applyRect(o.reel, r);
