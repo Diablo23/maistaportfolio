@@ -121,25 +121,34 @@
       ? { w: boxW, h: boxW / ar }     // box wider → match width, overflow height
       : { w: boxH * ar, h: boxH };    // box taller → match height, overflow width
   }
-  // Size each iframe ONCE to cover the FULL screen (in its video's aspect). During the
-  // animation we only change transform:scale (GPU-cheap) — never width/height — so the
-  // Vimeo players never re-layout mid-scroll (that was the source of the stutter).
+  // Size each iframe ONCE (transform:scale handles the animation → no per-frame re-layout).
+  // The SHOWREEL renders at fullscreen (it IS fullscreen). Each REEL renders only at its
+  // grid-cell size (~1/3 screen) — 9 reels at 1/3 screen is far lighter than 9 fullscreen
+  // ones, which is what made the split lag (badly on Mac).
   function sizeBaseIframes() {
     const sW = stage.clientWidth || window.innerWidth;
     const sH = stage.clientHeight || window.innerHeight;
-    const set = (ifr, ar) => {
-      if (!ifr) return;
-      const b = coverBox(sW, sH, ar || DEFAULT_AR);
-      ifr.style.width = b.w.toFixed(1) + "px";
-      ifr.style.height = b.h.toFixed(1) + "px";
-    };
-    set(showreelIframe, showreelAR);
-    reelEls.forEach((o, i) => set(o.frame, reelAR[i]));
+    if (showreelIframe) {
+      const b = coverBox(sW, sH, showreelAR || DEFAULT_AR);
+      showreelIframe.style.width = b.w.toFixed(1) + "px";
+      showreelIframe.style.height = b.h.toFixed(1) + "px";
+    }
+    reelEls.forEach((o, i) => {
+      if (!o.frame) return;
+      const g = fitInSlot(GRID[i], reelAR[i] || DEFAULT_AR, sW, sH);   // grid-cell frame (largest a reel gets)
+      o.frame.style.width = ((g.w / 100) * sW).toFixed(1) + "px";
+      o.frame.style.height = ((g.h / 100) * sH).toFixed(1) + "px";
+    });
   }
 
   const ENTER = { l: 6, t: 40, w: 88, h: 54 };   // showreel on enter
-  const FULL  = { l: 4, t: 6,  w: 92, h: 88 };   // reels' emerge area
+  const FULL  = { l: 4, t: 6,  w: 92, h: 88 };   // (kept for reference)
   const SR_FULL = { l: 0, t: 0, w: 100, h: 100 };// showreel at fullscreen — edge to edge
+  // 3×3 grid that fills the screen — where the reels START (so the screen stays full as the
+  // showreel hands off), each reel then shrinks + scatters to its slot.
+  const GRID = [];
+  for (let gr = 0; gr < 3; gr++) for (let gc = 0; gc < 3; gc++)
+    GRID.push({ l: gc * 33.34, t: gr * 33.34, w: 33.34, h: 33.34 });
 
   const lerpRect = (A, B, t) => ({
     l: lerp(A.l, B.l, t), t: lerp(A.t, B.t, t),
@@ -501,18 +510,18 @@
     const t = performance.now() / 1000;
     reelEls.forEach((o, i) => {
       const qi = easeInOut(smoothstep(0.54 + i * 0.012, 0.86, p));
-      // Reels START edge-to-edge (exactly like the fullscreen showreel) and morph into
-      // their video-aspect tiles as they scatter — no size jump. The iframe cover-fits
-      // its frame at every step: full-bleed while big, exact fit once it's a tile.
-      const start  = SR_FULL;
-      const target = fitByArea(SCATTER[i], reelAR[i], sW, sH);
+      const arI = reelAR[i] || DEFAULT_AR;
+      // Reels START as a screen-filling 3×3 grid (each ~1/3 screen) and shrink+scatter to
+      // their slots. Both endpoints share the video's aspect, so the frame stays that aspect
+      // the whole way and the iframe fills it exactly (no letterbox, no oversized fullscreen).
+      const start  = fitInSlot(GRID[i], arI, sW, sH);
+      const target = fitByArea(SCATTER[i], arI, sW, sH);
       const r = lerpRect(start, target, qi);
       applyRect(o.reel, r);
       o.reel.style.opacity = reelsIn;
       if (o.frame) {
-        const rw = (r.w / 100) * sW, rh = (r.h / 100) * sH;
-        const arI = reelAR[i] || DEFAULT_AR;
-        const k = coverBox(rw, rh, arI).w / coverBox(sW, sH, arI).w;   // ≤1 → downscale, crisp
+        // iframe base = the grid frame (set in sizeBaseIframes); scale down to the current frame
+        const k = start.w > 0 ? r.w / start.w : 1;               // ≤1 → downscale, stays crisp
         o.frame.style.transform = "translate(-50%,-50%) scale(" + k.toFixed(4) + ")";
       }
       // gentle chaotic float + tilt once scattered (still levitating)
