@@ -78,6 +78,7 @@
         if (data && data.width && data.height) reelAR[i] = data.width / data.height;
         try { delete window[cb]; } catch (e) {}
         s.remove();
+        sizeBaseIframes();
       };
       s.onerror = function () { try { delete window[cb]; } catch (e) {} s.remove(); };
       s.src = "https://vimeo.com/api/oembed.json?url=https%3A%2F%2Fvimeo.com%2F" + reel.id + "&callback=" + cb;
@@ -90,6 +91,7 @@
       if (data && data.width && data.height) showreelAR = data.width / data.height;
       try { delete window[scb]; } catch (e) {}
       ss.remove();
+      sizeBaseIframes();
     };
     ss.onerror = function () { try { delete window[scb]; } catch (e) {} ss.remove(); };
     ss.src = "https://vimeo.com/api/oembed.json?url=https%3A%2F%2Fvimeo.com%2F" + SHOWREEL_ID + "&callback=" + scb;
@@ -101,6 +103,21 @@
     return boxW / boxH >= ar
       ? { w: boxW, h: boxW / ar }     // box wider → match width, overflow height
       : { w: boxH * ar, h: boxH };    // box taller → match height, overflow width
+  }
+  // Size each iframe ONCE to cover the FULL screen (in its video's aspect). During the
+  // animation we only change transform:scale (GPU-cheap) — never width/height — so the
+  // Vimeo players never re-layout mid-scroll (that was the source of the stutter).
+  function sizeBaseIframes() {
+    const sW = stage.clientWidth || window.innerWidth;
+    const sH = stage.clientHeight || window.innerHeight;
+    const set = (ifr, ar) => {
+      if (!ifr) return;
+      const b = coverBox(sW, sH, ar || DEFAULT_AR);
+      ifr.style.width = b.w.toFixed(1) + "px";
+      ifr.style.height = b.h.toFixed(1) + "px";
+    };
+    set(showreelIframe, showreelAR);
+    reelEls.forEach((o, i) => set(o.frame, reelAR[i]));
   }
 
   const ENTER = { l: 6, t: 40, w: 88, h: 54 };   // showreel on enter
@@ -429,9 +446,9 @@
     if (showreelMedia) showreelMedia.style.borderRadius = srRadius;
     if (showreelIframe) {
       const fw = (srRect.w / 100) * sW, fh = (srRect.h / 100) * sH;
-      const cb = coverBox(fw, fh, showreelAR || DEFAULT_AR);
-      showreelIframe.style.width = cb.w.toFixed(1) + "px";
-      showreelIframe.style.height = cb.h.toFixed(1) + "px";
+      const arS = showreelAR || DEFAULT_AR;
+      const k = coverBox(fw, fh, arS).w / coverBox(sW, sH, arS).w;   // ≤1 → downscale, stays crisp
+      showreelIframe.style.transform = "translate(-50%,-50%) scale(" + k.toFixed(4) + ")";
     }
 
     // title: rises upward and fades out gently AS the showreel begins (smooth crossfade)
@@ -463,9 +480,9 @@
       o.reel.style.opacity = reelsIn;
       if (o.frame) {
         const rw = (r.w / 100) * sW, rh = (r.h / 100) * sH;
-        const cb = coverBox(rw, rh, reelAR[i] || DEFAULT_AR);
-        o.frame.style.width = cb.w.toFixed(1) + "px";
-        o.frame.style.height = cb.h.toFixed(1) + "px";
+        const arI = reelAR[i] || DEFAULT_AR;
+        const k = coverBox(rw, rh, arI).w / coverBox(sW, sH, arI).w;   // ≤1 → downscale, crisp
+        o.frame.style.transform = "translate(-50%,-50%) scale(" + k.toFixed(4) + ")";
       }
       // gentle chaotic float + tilt once scattered (still levitating)
       const amp = 10 * qi;
@@ -602,6 +619,7 @@
   function init() {
     const safe = (fn) => { try { fn(); } catch (e) { console.warn("init step failed:", e); } };
     safe(buildReels);
+    safe(sizeBaseIframes);
     safe(loadReelAspects);
     safe(buildLogos);
     safe(buildShapes);                          // after content so page height is known
@@ -638,6 +656,7 @@
       rz = setTimeout(() => {
         const field = document.getElementById("logoField");
         if (field) { field.innerHTML = ""; safe(buildLogos); }
+        safe(sizeBaseIframes);
         safe(buildShapes);
         safe(fitPrice);
         safe(fitHeroText);
