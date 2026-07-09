@@ -135,9 +135,10 @@
     }
     reelEls.forEach((o, i) => {
       if (!o.frame) return;
-      const g = fitInSlot(GRID[i], reelAR[i] || DEFAULT_AR, sW, sH);   // grid-cell frame (largest a reel gets)
-      o.frame.style.width = ((g.w / 100) * sW).toFixed(1) + "px";
-      o.frame.style.height = ((g.h / 100) * sH).toFixed(1) + "px";
+      const cw = (GRID[i].w / 100) * sW, ch = (GRID[i].h / 100) * sH;
+      const b = coverBox(cw, ch, reelAR[i] || DEFAULT_AR);   // cover the grid cell (largest a reel renders)
+      o.frame.style.width = b.w.toFixed(1) + "px";
+      o.frame.style.height = b.h.toFixed(1) + "px";
     });
   }
 
@@ -511,17 +512,20 @@
     reelEls.forEach((o, i) => {
       const qi = easeInOut(smoothstep(0.54 + i * 0.012, 0.86, p));
       const arI = reelAR[i] || DEFAULT_AR;
-      // Reels START as a screen-filling 3×3 grid (each ~1/3 screen) and shrink+scatter to
-      // their slots. Both endpoints share the video's aspect, so the frame stays that aspect
-      // the whole way and the iframe fills it exactly (no letterbox, no oversized fullscreen).
-      const start  = fitInSlot(GRID[i], arI, sW, sH);
+      // Reels START filling a screen-filling 3×3 grid EDGE-TO-EDGE (each video COVERS its
+      // cell → the full screen reassembles out of 9 pieces exactly where the showreel was,
+      // then the pieces shrink + fly apart = the showreel "splitting into 9"). Each piece
+      // only renders at ~1/3 screen, so it stays light. Ends as a whole-video tile.
+      const start  = GRID[i];                                   // full cell (cover-filled)
       const target = fitByArea(SCATTER[i], arI, sW, sH);
       const r = lerpRect(start, target, qi);
       applyRect(o.reel, r);
       o.reel.style.opacity = reelsIn;
       if (o.frame) {
-        // iframe base = the grid frame (set in sizeBaseIframes); scale down to the current frame
-        const k = start.w > 0 ? r.w / start.w : 1;               // ≤1 → downscale, stays crisp
+        // iframe base = cover of the cell (set in sizeBaseIframes); scale to cover the current frame
+        const baseW = coverBox((start.w / 100) * sW, (start.h / 100) * sH, arI).w;
+        const curW  = coverBox((r.w / 100) * sW, (r.h / 100) * sH, arI).w;
+        const k = baseW > 0 ? curW / baseW : 1;                 // ≤1 → downscale, stays crisp
         o.frame.style.transform = "translate(-50%,-50%) scale(" + k.toFixed(4) + ")";
       }
       // gentle chaotic float + tilt once scattered (still levitating)
