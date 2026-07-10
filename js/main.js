@@ -389,10 +389,12 @@
       el.style.setProperty("--lr", rand(3, 7).toFixed(1) + "deg");     // gentle tilt sway
       el.style.animationDelay = "-" + rand(0, 12).toFixed(1) + "s";    // negative → each starts mid-orbit (desynced, never all still)
       el.style.opacity = "0";                     // revealed by the scroll-driven intro
-      // centred on its point via CSS transform:translate(-50%,-50%), so left/top are the CENTRE
+      // centred on its point via CSS transform:translate(-50%,-50%), so left/top are the CENTRE.
+      // Size is driven by --w/--h (CSS vars) so the :hover size rule isn't overridden by inline width.
       const cx = best.x, cy = best.y, s0 = Math.sqrt(AREA);
       el.style.left = cx.toFixed(1) + "px"; el.style.top = cy.toFixed(1) + "px";
-      el.style.width = s0.toFixed(1) + "px"; el.style.height = s0.toFixed(1) + "px";
+      el.style.setProperty("--w", s0.toFixed(1) + "px");
+      el.style.setProperty("--h", s0.toFixed(1) + "px");
 
       const img = document.createElement("img");
       img.alt = "";
@@ -402,7 +404,8 @@
         const ar = (img.naturalWidth || 1) / (img.naturalHeight || 1);
         const sc = SCALE[file] || 1;
         const w = Math.sqrt(AREA * ar) * sc, h = Math.sqrt(AREA / ar) * sc;
-        el.style.width = w.toFixed(1) + "px"; el.style.height = h.toFixed(1) + "px";
+        el.style.setProperty("--w", w.toFixed(1) + "px");
+        el.style.setProperty("--h", h.toFixed(1) + "px");
         el.style.setProperty("--hw", (w * 2.1).toFixed(1) + "px");     // hover grows the REAL size (stays crisp)
         el.style.setProperty("--hh", (h * 2.1).toFixed(1) + "px");
       };
