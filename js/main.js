@@ -349,11 +349,18 @@
       "layerzero.svg", "hyperlane.svg", "succinct.svg", "codex.svg", "doma.svg",
       "soon.svg", "bullpen.svg", "aifinpay.svg", "bulk.svg"
     ];
+    // per-logo size tweak (1 = normal). Shrink the ones whose mark reads too big so they
+    // match the rest. Tweak these numbers any time to fine-tune a single logo.
+    const SCALE = {
+      "layerzero.svg": 0.68,
+      "bullpen.svg":   0.76,
+      "succinct.svg":  0.76
+    };
 
     const W = field.clientWidth || 1000;
     const H = field.clientHeight || 340;
     const AREA = 100 * 100;    // every logo occupies the SAME visual area → they read as one size
-    const R = 74;              // uniform placement radius → even spacing for any shape
+    const R = 92;              // uniform placement radius → even, roomier spacing
     const pad = 6;
     const placed = [];         // {x,y} centres already taken
 
@@ -393,7 +400,8 @@
       // keeping it centred → tall, wide and square logos all end up equally prominent
       img.onload = function () {
         const ar = (img.naturalWidth || 1) / (img.naturalHeight || 1);
-        const w = Math.sqrt(AREA * ar), h = Math.sqrt(AREA / ar);
+        const sc = SCALE[file] || 1;
+        const w = Math.sqrt(AREA * ar) * sc, h = Math.sqrt(AREA / ar) * sc;
         el.style.width = w.toFixed(1) + "px"; el.style.height = h.toFixed(1) + "px";
         el.style.left = (cx - w / 2).toFixed(1) + "px"; el.style.top = (cy - h / 2).toFixed(1) + "px";
       };
