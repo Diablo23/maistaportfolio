@@ -340,29 +340,36 @@
      ============================================================ */
   function buildLogos() {
     const field = document.getElementById("logoField");
-    const names = ["NOVA", "AETH", "ZK·X", "ORBIT", "MNT", "LUMA", "PIXL", "DAO+", "FLUX"];
+    // ┌─ YOUR LOGOS ────────────────────────────────────────────────────────┐
+    // │ 1. Put your .svg files in the folder:  assets/logos/                 │
+    // │ 2. List their file names below (with .svg). Add / remove lines to    │
+    // │    change how many logos appear — the layout adjusts automatically.  │
+    // └─────────────────────────────────────────────────────────────────────┘
+    const LOGOS = [
+      "nova.svg", "aeth.svg", "zkx.svg", "orbit.svg", "mnt.svg",
+      "luma.svg", "pixl.svg", "dao.svg", "flux.svg"
+    ];
+
     const W = field.clientWidth || 1000;
     const H = field.clientHeight || 340;
     const pad = 6;
     const placed = [];   // {x,y,r} centres already taken
 
     // Best-candidate ("dart throwing") scatter: for each logo, try several random spots
-    // and keep the one that sits FARTHEST from all others. Gives an organic, evenly-spread
-    // layout — no rigid rows, harmonious spacing, and effectively no overlaps.
-    names.forEach((nm, i) => {
+    // and keep the one that sits FARTHEST from all others → organic, evenly-spread, no overlaps.
+    LOGOS.forEach((file, i) => {
       const size = rand(64, 92);
       const rad = size / 2;
       let best = null, bestScore = -Infinity;
-      const tries = 40;
-      for (let k = 0; k < tries; k++) {
+      for (let k = 0; k < 40; k++) {
         const cx = rand(rad + pad, W - rad - pad);
         const cy = rand(rad + pad, H - rad - pad);
         let nearest = Infinity;
         for (const p of placed) {
-          const gap = Math.hypot(cx - p.x, cy - p.y) - (rad + p.r);   // edge-to-edge distance
+          const gap = Math.hypot(cx - p.x, cy - p.y) - (rad + p.r);
           if (gap < nearest) nearest = gap;
         }
-        const score = placed.length ? nearest : rand(0, 1);           // first one: anywhere
+        const score = placed.length ? nearest : rand(0, 1);
         if (score > bestScore) { bestScore = score; best = { x: cx, y: cy, r: rad }; }
       }
       placed.push(best);
@@ -371,7 +378,6 @@
       el.className = "logo interactive";
       el.style.width = size + "px";
       el.style.height = size + "px";
-      el.style.fontSize = (size * 0.2).toFixed(0) + "px";
       el.style.left = (best.x - rad).toFixed(1) + "px";
       el.style.top = (best.y - rad).toFixed(1) + "px";
       el.style.setProperty("--t", rand(6, 11).toFixed(1) + "s");
@@ -380,7 +386,12 @@
       el.style.setProperty("--lr", rand(-6, 6).toFixed(1) + "deg");
       el.style.animationDelay = rand(0, 4).toFixed(1) + "s";
       el.style.opacity = "0";                     // revealed by the scroll-driven intro
-      el.textContent = nm;
+
+      const img = document.createElement("img");
+      img.src = "assets/logos/" + file;
+      img.alt = "";
+      img.loading = "lazy";
+      el.appendChild(img);
       field.appendChild(el);
     });
   }
