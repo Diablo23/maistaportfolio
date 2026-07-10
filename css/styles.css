@@ -169,7 +169,7 @@ section{position:relative;z-index:1;pointer-events:none}
 /* six reels */
 #reels{position:absolute;inset:0}
 .reel{
-  position:absolute;will-change:left,top,width,height,transform;
+  position:absolute;will-change:transform;
   backface-visibility:hidden;-webkit-backface-visibility:hidden;isolation:isolate;
 }
 /* dynamic orange glow around each settled tile (on .reel, which isn't overflow-clipped);
@@ -193,12 +193,16 @@ section{position:relative;z-index:1;pointer-events:none}
 .reel-inner{
   position:absolute;inset:0;border-radius:10px;overflow:hidden;
   background:linear-gradient(135deg,#ffa845 0%,var(--orange) 46%,var(--orange-deep) 100%);
-  box-shadow:
-    inset 0 0 0 2.5px #ffb340,                        /* crisp orange edge — brighter + a touch thicker */
-    0 24px 60px -30px rgba(0,0,0,.55),
-    0 0 26px 0 rgba(255,150,40,.45);                  /* warm base glow (the pulse is on .reel::before) */
+  box-shadow:none;                                   /* while flying apart: no shadows → no Mac flicker */
   transition:transform .45s var(--ease),box-shadow .45s var(--ease);
   cursor:pointer;
+}
+/* shadows/border/glow only once the tiles have settled (also when the videos fade in) */
+#stage.live .reel-inner{
+  box-shadow:
+    inset 0 0 0 2.5px #ffb340,                        /* crisp orange edge */
+    0 24px 60px -30px rgba(0,0,0,.55),
+    0 0 26px 0 rgba(255,150,40,.45);
 }
 
 
