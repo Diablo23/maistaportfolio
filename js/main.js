@@ -458,6 +458,7 @@
   const heroWords = heroText ? heroText.querySelectorAll(".word") : [];
   const priceAmountEl = document.getElementById("priceAmount");
   const scrollHint = document.getElementById("scrollHint");
+  const splitHint = document.getElementById("splitHint");
 
   let lastP = -1;
   let introStart = 0;                                   // set on init
@@ -551,6 +552,14 @@
 
     // scroll hint
     scrollHint.style.opacity = (1 - smoothstep(0.02, 0.12, p)).toFixed(3);
+    if (splitHint) {
+      // visible while the video is fullscreen and starting to split (so it doesn't look
+      // like a glitch); fades away with blur+opacity once you scroll into the scatter
+      const on = smoothstep(0.34, 0.44, p) * (1 - smoothstep(0.58, 0.70, p));
+      splitHint.style.opacity = on.toFixed(3);
+      splitHint.style.filter = on > 0.99 ? "none" : "blur(" + ((1 - on) * 8).toFixed(1) + "px)";
+      splitHint.style.transform = "translateX(-50%) translateY(" + ((1 - on) * 12).toFixed(1) + "px)";
+    }
 
     lastP = p;
     ticking = false;
