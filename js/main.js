@@ -346,8 +346,8 @@
     // │    change how many logos appear — the layout adjusts automatically.  │
     // └─────────────────────────────────────────────────────────────────────┘
     const LOGOS = [
-      "nova.svg", "aeth.svg", "zkx.svg", "orbit.svg", "mnt.svg",
-      "luma.svg", "pixl.svg", "dao.svg", "flux.svg"
+      "layerzero.svg", "hyperlane.svg", "succinct.svg", "codex.svg", "doma.svg",
+      "soon.svg", "bullpen.svg", "aifinpay.svg", "bulk.svg"
     ];
 
     const W = field.clientWidth || 1000;
