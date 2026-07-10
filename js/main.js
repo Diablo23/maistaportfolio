@@ -358,7 +358,7 @@
     // Best-candidate ("dart throwing") scatter: for each logo, try several random spots
     // and keep the one that sits FARTHEST from all others → organic, evenly-spread, no overlaps.
     LOGOS.forEach((file, i) => {
-      const size = rand(64, 92);
+      const size = rand(84, 118);
       const rad = size / 2;
       let best = null, bestScore = -Infinity;
       for (let k = 0; k < 40; k++) {
