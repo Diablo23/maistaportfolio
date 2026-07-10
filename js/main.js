@@ -383,27 +383,28 @@
 
       const el = document.createElement("div");
       el.className = "logo interactive";
-      el.style.setProperty("--t", rand(6, 11).toFixed(1) + "s");
-      el.style.setProperty("--lx", rand(-16, 16).toFixed(1) + "px");
-      el.style.setProperty("--ly", rand(-20, 14).toFixed(1) + "px");
-      el.style.setProperty("--lr", rand(-6, 6).toFixed(1) + "deg");
-      el.style.animationDelay = rand(0, 4).toFixed(1) + "s";
+      el.style.setProperty("--t", rand(7, 12).toFixed(1) + "s");
+      el.style.setProperty("--lx", rand(9, 18).toFixed(1) + "px");     // ellipse X radius (magnitude)
+      el.style.setProperty("--ly", rand(9, 16).toFixed(1) + "px");     // ellipse Y radius (magnitude)
+      el.style.setProperty("--lr", rand(3, 7).toFixed(1) + "deg");     // gentle tilt sway
+      el.style.animationDelay = "-" + rand(0, 12).toFixed(1) + "s";    // negative → each starts mid-orbit (desynced, never all still)
       el.style.opacity = "0";                     // revealed by the scroll-driven intro
-      // provisional square box, centred on the chosen spot (until the SVG's real shape loads)
+      // centred on its point via CSS transform:translate(-50%,-50%), so left/top are the CENTRE
       const cx = best.x, cy = best.y, s0 = Math.sqrt(AREA);
+      el.style.left = cx.toFixed(1) + "px"; el.style.top = cy.toFixed(1) + "px";
       el.style.width = s0.toFixed(1) + "px"; el.style.height = s0.toFixed(1) + "px";
-      el.style.left = (cx - s0 / 2).toFixed(1) + "px"; el.style.top = (cy - s0 / 2).toFixed(1) + "px";
 
       const img = document.createElement("img");
       img.alt = "";
-      // once we know the logo's real aspect, resize the box to the SAME AREA at that aspect,
-      // keeping it centred → tall, wide and square logos all end up equally prominent
+      // once we know the logo's real aspect, resize the box to the SAME AREA at that aspect
+      // → tall, wide and square logos all end up equally prominent. Also set the hover size.
       img.onload = function () {
         const ar = (img.naturalWidth || 1) / (img.naturalHeight || 1);
         const sc = SCALE[file] || 1;
         const w = Math.sqrt(AREA * ar) * sc, h = Math.sqrt(AREA / ar) * sc;
         el.style.width = w.toFixed(1) + "px"; el.style.height = h.toFixed(1) + "px";
-        el.style.left = (cx - w / 2).toFixed(1) + "px"; el.style.top = (cy - h / 2).toFixed(1) + "px";
+        el.style.setProperty("--hw", (w * 2.1).toFixed(1) + "px");     // hover grows the REAL size (stays crisp)
+        el.style.setProperty("--hh", (h * 2.1).toFixed(1) + "px");
       };
       img.src = "assets/logos/" + file;
       el.appendChild(img);
