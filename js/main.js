@@ -352,45 +352,52 @@
 
     const W = field.clientWidth || 1000;
     const H = field.clientHeight || 340;
+    const AREA = 100 * 100;    // every logo occupies the SAME visual area → they read as one size
+    const R = 74;              // uniform placement radius → even spacing for any shape
     const pad = 6;
-    const placed = [];   // {x,y,r} centres already taken
+    const placed = [];         // {x,y} centres already taken
 
-    // Best-candidate ("dart throwing") scatter: for each logo, try several random spots
-    // and keep the one that sits FARTHEST from all others → organic, evenly-spread, no overlaps.
+    // Best-candidate ("dart throwing") scatter: try several spots, keep the one FARTHEST
+    // from all others → organic, evenly-spread, no overlaps.
     LOGOS.forEach((file, i) => {
-      const size = rand(84, 118);
-      const rad = size / 2;
       let best = null, bestScore = -Infinity;
       for (let k = 0; k < 40; k++) {
-        const cx = rand(rad + pad, W - rad - pad);
-        const cy = rand(rad + pad, H - rad - pad);
+        const cx = rand(R + pad, W - R - pad);
+        const cy = rand(R + pad, H - R - pad);
         let nearest = Infinity;
         for (const p of placed) {
-          const gap = Math.hypot(cx - p.x, cy - p.y) - (rad + p.r);
+          const gap = Math.hypot(cx - p.x, cy - p.y) - 2 * R;
           if (gap < nearest) nearest = gap;
         }
         const score = placed.length ? nearest : rand(0, 1);
-        if (score > bestScore) { bestScore = score; best = { x: cx, y: cy, r: rad }; }
+        if (score > bestScore) { bestScore = score; best = { x: cx, y: cy }; }
       }
       placed.push(best);
 
       const el = document.createElement("div");
       el.className = "logo interactive";
-      el.style.width = size + "px";
-      el.style.height = size + "px";
-      el.style.left = (best.x - rad).toFixed(1) + "px";
-      el.style.top = (best.y - rad).toFixed(1) + "px";
       el.style.setProperty("--t", rand(6, 11).toFixed(1) + "s");
       el.style.setProperty("--lx", rand(-16, 16).toFixed(1) + "px");
       el.style.setProperty("--ly", rand(-20, 14).toFixed(1) + "px");
       el.style.setProperty("--lr", rand(-6, 6).toFixed(1) + "deg");
       el.style.animationDelay = rand(0, 4).toFixed(1) + "s";
       el.style.opacity = "0";                     // revealed by the scroll-driven intro
+      // provisional square box, centred on the chosen spot (until the SVG's real shape loads)
+      const cx = best.x, cy = best.y, s0 = Math.sqrt(AREA);
+      el.style.width = s0.toFixed(1) + "px"; el.style.height = s0.toFixed(1) + "px";
+      el.style.left = (cx - s0 / 2).toFixed(1) + "px"; el.style.top = (cy - s0 / 2).toFixed(1) + "px";
 
       const img = document.createElement("img");
-      img.src = "assets/logos/" + file;
       img.alt = "";
-      img.loading = "lazy";
+      // once we know the logo's real aspect, resize the box to the SAME AREA at that aspect,
+      // keeping it centred → tall, wide and square logos all end up equally prominent
+      img.onload = function () {
+        const ar = (img.naturalWidth || 1) / (img.naturalHeight || 1);
+        const w = Math.sqrt(AREA * ar), h = Math.sqrt(AREA / ar);
+        el.style.width = w.toFixed(1) + "px"; el.style.height = h.toFixed(1) + "px";
+        el.style.left = (cx - w / 2).toFixed(1) + "px"; el.style.top = (cy - h / 2).toFixed(1) + "px";
+      };
+      img.src = "assets/logos/" + file;
       el.appendChild(img);
       field.appendChild(el);
     });
