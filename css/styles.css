@@ -340,21 +340,26 @@ section{position:relative;z-index:1;pointer-events:none}
 }
 .logo{
   position:absolute;
+  width:var(--w,100px);height:var(--h,100px);
   transform:translate(-50%,-50%);              /* centred on its point → size changes stay centred */
   pointer-events:auto;cursor:default;
-  transition:width .4s var(--ease),height .4s var(--ease);
+  transition:width .45s var(--ease),height .45s var(--ease);
   animation:floatLogo var(--t,8s) linear infinite;
   will-change:translate;
 }
-/* grow by changing the real size (not transform) so the SVG re-renders crisp, not pixelated;
-   the float animation keeps running because it lives on a different property (translate/rotate) */
+/* grow via the REAL size (CSS vars, so :hover isn't blocked by inline styles) → SVG stays crisp,
+   and the float keeps running because it lives on a different property (translate/rotate) */
 .logo:hover{width:var(--hw);height:var(--hh);z-index:30}
 .logo img{width:100%;height:100%;object-fit:contain;display:block;pointer-events:none;user-select:none;filter:drop-shadow(0 7px 12px rgba(0,0,0,.22))}
 @keyframes floatLogo{
   0%,100%{translate:var(--lx,12px) 0;rotate:var(--lr,4deg)}
+  12.5%  {translate:calc(var(--lx,12px) * .707) calc(var(--ly,12px) * .707);rotate:calc(var(--lr,4deg) * .5)}
   25%    {translate:0 var(--ly,12px);rotate:0deg}
+  37.5%  {translate:calc(var(--lx,12px) * -.707) calc(var(--ly,12px) * .707);rotate:calc(var(--lr,4deg) * -.5)}
   50%    {translate:calc(var(--lx,12px) * -1) 0;rotate:calc(var(--lr,4deg) * -1)}
+  62.5%  {translate:calc(var(--lx,12px) * -.707) calc(var(--ly,12px) * -.707);rotate:calc(var(--lr,4deg) * -.5)}
   75%    {translate:0 calc(var(--ly,12px) * -1);rotate:0deg}
+  87.5%  {translate:calc(var(--lx,12px) * .707) calc(var(--ly,12px) * -.707);rotate:calc(var(--lr,4deg) * .5)}
 }
 
 /* ============================================================
