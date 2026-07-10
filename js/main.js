@@ -95,7 +95,7 @@
         if (data && data.width && data.height) reelAR[i] = data.width / data.height;
         try { delete window[cb]; } catch (e) {}
         s.remove();
-        sizeBaseIframes();
+        layoutReels();
       };
       s.onerror = function () { try { delete window[cb]; } catch (e) {} s.remove(); };
       s.src = "https://vimeo.com/api/oembed.json?url=https%3A%2F%2Fvimeo.com%2F" + reel.id + "&callback=" + cb;
@@ -133,11 +133,16 @@
       showreelIframe.style.width = b.w.toFixed(1) + "px";
       showreelIframe.style.height = b.h.toFixed(1) + "px";
     }
+  }
+  // Lay out each reel ONCE at its final tile (video-aspect). The scatter animation is then
+  // pure transform (translate+scale) from fullscreen → this tile, so no layout repaint/blink.
+  function layoutReels() {
+    const sW = stage.clientWidth || window.innerWidth;
+    const sH = stage.clientHeight || window.innerHeight;
     reelEls.forEach((o, i) => {
-      if (!o.frame) return;
-      const b = coverBox(sW, sH, reelAR[i] || DEFAULT_AR);   // fullscreen cover — reels start as big as the showreel
-      o.frame.style.width = b.w.toFixed(1) + "px";
-      o.frame.style.height = b.h.toFixed(1) + "px";
+      const tile = fitByArea(SCATTER[i], reelAR[i] || DEFAULT_AR, sW, sH);
+      o.tileRect = tile;
+      applyRect(o.reel, tile);
     });
   }
 
@@ -512,31 +517,31 @@
     reelEls.forEach((o, i) => {
       const qi = easeInOut(smoothstep(0.54 + i * 0.012, 0.86, p));
       const arI = reelAR[i] || DEFAULT_AR;
-      // Reels START fullscreen — as big as the showreel — stacked, so it reads as the
-      // showreel splitting into 9; they only shrink + scatter to their tiles as you scroll on.
-      const start  = SR_FULL;
-      const target = fitByArea(SCATTER[i], arI, sW, sH);
-      const r = lerpRect(start, target, qi);
-      applyRect(o.reel, r);
-      o.reel.style.opacity = reelsIn;
-      if (o.frame) {
-        // iframe base = fullscreen cover (set in sizeBaseIframes); scale to cover the current frame
-        const baseW = coverBox(sW, sH, arI).w;
-        const curW  = coverBox((r.w / 100) * sW, (r.h / 100) * sH, arI).w;
-        const k = baseW > 0 ? curW / baseW : 1;                 // ≤1 → downscale, stays crisp
-        o.frame.style.transform = "translate(-50%,-50%) scale(" + k.toFixed(4) + ")";
-      }
+      // The reel is LAID OUT once at its final tile (see layoutReels). We animate it from the
+      // fullscreen start to that tile purely with transform (translate + scale) — GPU-composited,
+      // so there is NO per-frame layout repaint. That repaint gap was the Safari "blink" where
+      // the background flashed through for a frame.
+      const tile = o.tileRect || fitByArea(SCATTER[i], arI, sW, sH);
+      const cur  = lerpRect(SR_FULL, tile, qi);
+      const sx = tile.w > 0 ? cur.w / tile.w : 1;
+      const sy = tile.h > 0 ? cur.h / tile.h : 1;
+      const tcx = tile.l + tile.w / 2, tcy = tile.t + tile.h / 2;   // laid-out centre (%)
+      const ccx = cur.l + cur.w / 2,  ccy = cur.t + cur.h / 2;      // where it should appear (%)
+      const tx = ((ccx - tcx) / 100) * sW;                         // → px
+      const ty = ((ccy - tcy) / 100) * sH;
       // gentle chaotic float + tilt once scattered (still levitating)
       const amp = 10 * qi;
       const fx = Math.sin(t * 0.7 + i * 1.3) * amp;
       const fy = Math.cos(t * 0.6 + i * 2.1) * amp;
       const ang = REEL_ANGLES[i] || 0;
       const rot = (ang + Math.sin(t * 0.5 + i * 1.7) * 1.6) * qi;   // tilt eases in, then sways
-      o.reel.style.transform = `translate(${fx}px, ${fy}px) rotate(${rot.toFixed(2)}deg)`;
+      o.reel.style.transform =
+        `translate(${(tx + fx).toFixed(2)}px, ${(ty + fy).toFixed(2)}px) scale(${sx.toFixed(4)}, ${sy.toFixed(4)}) rotate(${rot.toFixed(2)}deg)`;
+      o.reel.style.opacity = reelsIn;
     });
 
     // enable interaction as soon as the reels have separated
-    stage.classList.toggle("live", p > 0.8);
+    stage.classList.toggle("live", p > 0.87);
 
     // dynamic, scroll-reactive background shapes
     updateShapes(window.scrollY || window.pageYOffset || 0, t);
@@ -662,6 +667,7 @@
     const safe = (fn) => { try { fn(); } catch (e) { console.warn("init step failed:", e); } };
     safe(buildReels);
     safe(sizeBaseIframes);
+    safe(layoutReels);
     safe(loadReelAspects);
     safe(buildLogos);
     safe(buildShapes);                          // after content so page height is known
@@ -699,6 +705,7 @@
         const field = document.getElementById("logoField");
         if (field) { field.innerHTML = ""; safe(buildLogos); }
         safe(sizeBaseIframes);
+        safe(layoutReels);
         safe(buildShapes);
         safe(fitPrice);
         safe(fitHeroText);
