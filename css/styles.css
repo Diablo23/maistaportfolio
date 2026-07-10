@@ -339,17 +339,22 @@ section{position:relative;z-index:1;pointer-events:none}
   margin:clamp(4.5rem,10vh,7rem) auto 0;   /* nudged down so it clears the title */
 }
 .logo{
-  position:absolute;display:grid;place-items:center;
+  position:absolute;
+  transform:translate(-50%,-50%);              /* centred on its point → size changes stay centred */
   pointer-events:auto;cursor:default;
-  transition:transform .45s var(--ease);
-  animation:floatLogo var(--t,7s) var(--ease-soft) infinite;
+  transition:width .4s var(--ease),height .4s var(--ease);
+  animation:floatLogo var(--t,8s) linear infinite;
+  will-change:translate;
 }
-.logo:hover{transform:scale(2.2);z-index:30;animation-play-state:paused}
+/* grow by changing the real size (not transform) so the SVG re-renders crisp, not pixelated;
+   the float animation keeps running because it lives on a different property (translate/rotate) */
+.logo:hover{width:var(--hw);height:var(--hh);z-index:30}
 .logo img{width:100%;height:100%;object-fit:contain;display:block;pointer-events:none;user-select:none;filter:drop-shadow(0 7px 12px rgba(0,0,0,.22))}
 @keyframes floatLogo{
-  0%{translate:0 0;rotate:0deg}
-  50%{translate:var(--lx,10px) var(--ly,-14px);rotate:var(--lr,3deg)}
-  100%{translate:0 0;rotate:0deg}
+  0%,100%{translate:var(--lx,12px) 0;rotate:var(--lr,4deg)}
+  25%    {translate:0 var(--ly,12px);rotate:0deg}
+  50%    {translate:calc(var(--lx,12px) * -1) 0;rotate:calc(var(--lr,4deg) * -1)}
+  75%    {translate:0 calc(var(--ly,12px) * -1);rotate:0deg}
 }
 
 /* ============================================================
