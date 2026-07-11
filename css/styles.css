@@ -144,16 +144,10 @@ section{position:relative;z-index:1;pointer-events:none}
 .reel .media-fill{position:absolute;inset:0;overflow:hidden;border-radius:10px;z-index:1;clip-path:inset(0 round 10px);opacity:0;visibility:hidden;transition:opacity .55s ease}
 /* while the reels are big + flying apart they show only the orange gradient (video hidden →
    9 fullscreen videos aren't drawn = no lag); once settled, the videos fade in ONE BY ONE */
-#stage.live .reel .media-fill{opacity:1;visibility:visible}
-#stage.live .reel:nth-child(1) .media-fill{transition-delay:.05s}
-#stage.live .reel:nth-child(2) .media-fill{transition-delay:.14s}
-#stage.live .reel:nth-child(3) .media-fill{transition-delay:.23s}
-#stage.live .reel:nth-child(4) .media-fill{transition-delay:.32s}
-#stage.live .reel:nth-child(5) .media-fill{transition-delay:.41s}
-#stage.live .reel:nth-child(6) .media-fill{transition-delay:.50s}
-#stage.live .reel:nth-child(7) .media-fill{transition-delay:.59s}
-#stage.live .reel:nth-child(8) .media-fill{transition-delay:.68s}
-#stage.live .reel:nth-child(9) .media-fill{transition-delay:.77s}
+/* a reel reveals its video only when it has SETTLED (.live) AND its video is actually loaded
+   (.ready, added on the iframe load event) — until then the orange gradient shows, so slow
+   loads look clean instead of black/loading, and each reel pops in as it becomes ready */
+#stage.live .reel.ready .media-fill{opacity:1;visibility:visible}
 /* transparent overlay above the iframe so hover/cursor/click work over the whole tile */
 .reel-hit{position:absolute;inset:0;z-index:6}
 /* both the showreel and reel iframes are sized in JS to COVER their frame; centre them
