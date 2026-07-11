@@ -445,11 +445,22 @@
     lb.setAttribute("aria-hidden", "false");
     document.body.style.overflow = "hidden";
   }
+  // The browser pauses the occluded background videos while the lightbox is open; nudge them
+  // back to life on close (Vimeo accepts a "play" command via postMessage — no reload needed).
+  function resumeBackgroundVideos() {
+    const play = (ifr) => {
+      try { if (ifr && ifr.contentWindow) ifr.contentWindow.postMessage('{"method":"play"}', "*"); } catch (e) {}
+    };
+    reelEls.forEach((o) => play(o.frame));
+    play(showreelIframe);
+  }
   function closeLightbox() {
     lb.classList.remove("open");
     lb.setAttribute("aria-hidden", "true");
     lbFrame.src = "about:blank";              // stop playback
     document.body.style.overflow = "";
+    resumeBackgroundVideos();
+    setTimeout(resumeBackgroundVideos, 350);  // again once the overlay is fully gone
   }
   document.getElementById("lbClose").addEventListener("click", closeLightbox);
   lb.addEventListener("click", (e) => { if (e.target === lb) closeLightbox(); });
