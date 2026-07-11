@@ -308,7 +308,9 @@
       inner.className = "reel-inner";
 
       const ifr = document.createElement("iframe");
-      ifr.src = "https://player.vimeo.com/video/" + r.id +
+      // NB: no src yet — reels load LATER (after the showreel), so the showreel gets all the
+      // bandwidth first. The URL is kept here and applied by loadReelVideos().
+      ifr._vsrc = "https://player.vimeo.com/video/" + r.id +
                 "?background=1&autoplay=1&loop=1&muted=1&playsinline=1";
       ifr.setAttribute("frameborder", "0");
       ifr.setAttribute("allow", "autoplay; fullscreen; picture-in-picture");
@@ -332,6 +334,22 @@
 
       hit.addEventListener("click", () => openLightbox(r.id, r.tag));
       reelEls.push({ reel, frame: ifr });
+    });
+  }
+
+  // Load the 9 reel videos AFTER the showreel, staggered so they don't all jam the network at
+  // once. Each reel reveals its video only once THAT iframe has loaded (see .ready in CSS) — so
+  // on slower machines you see a clean orange gradient until the video is actually ready.
+  let reelsLoading = false;
+  function loadReelVideos() {
+    if (reelsLoading) return;
+    reelsLoading = true;
+    reelEls.forEach((o, i) => {
+      setTimeout(() => {
+        if (!o.frame || !o.frame._vsrc) return;
+        o.frame.addEventListener("load", () => setTimeout(() => o.reel.classList.add("ready"), 400), { once: true });
+        o.frame.src = o.frame._vsrc;
+      }, i * 300);                          // 300ms apart → sequential, not a bandwidth spike
     });
   }
 
@@ -708,6 +726,17 @@
     safe(sizeBaseIframes);
     safe(layoutReels);
     safe(loadReelAspects);
+    // showreel first: load the reels only once the showreel's player is up (it gets the bandwidth
+    // first). Fallbacks: also start on first scroll toward the section, and after 6s no matter what.
+    if (showreelIframe) {
+      showreelIframe.addEventListener("load", () => setTimeout(loadReelVideos, 900), { once: true });
+    } else {
+      setTimeout(loadReelVideos, 1200);
+    }
+    window.addEventListener("scroll", function onFirstScroll() {
+      if ((window.scrollY || 0) > window.innerHeight * 0.4) { loadReelVideos(); window.removeEventListener("scroll", onFirstScroll); }
+    }, { passive: true });
+    setTimeout(loadReelVideos, 6000);
     safe(buildLogos);
     safe(buildShapes);                          // after content so page height is known
     safe(setupReveals);
