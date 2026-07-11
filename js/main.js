@@ -374,6 +374,18 @@
       "bullpen.svg":   0.76,
       "succinct.svg":  0.76
     };
+    // click a logo → opens the project's X/Twitter in a new tab. Edit any link here.
+    const LINKS = {
+      "layerzero.svg": "https://x.com/LayerZero_Core",
+      "hyperlane.svg": "https://x.com/hyperlane",
+      "succinct.svg":  "https://x.com/SuccinctLabs",
+      "codex.svg":     "https://x.com/CodexFX",
+      "doma.svg":      "https://x.com/domaprotocol",
+      "soon.svg":      "https://x.com/soon_svm",
+      "bullpen.svg":   "https://x.com/BullpenFi",
+      "aifinpay.svg":  "https://x.com/aifinpay",
+      "bulk.svg":      "https://x.com/bulktrade"
+    };
 
     const W = field.clientWidth || 1000;
     const H = field.clientHeight || 340;
@@ -399,8 +411,11 @@
       }
       placed.push(best);
 
-      const el = document.createElement("div");
+      const el = document.createElement("a");
       el.className = "logo interactive";
+      const link = LINKS[file];
+      if (link) { el.href = link; el.target = "_blank"; el.rel = "noopener noreferrer"; }
+      el.style.cursor = link ? "pointer" : "default";
       el.style.setProperty("--t", rand(7, 12).toFixed(1) + "s");
       el.style.setProperty("--lx", rand(9, 18).toFixed(1) + "px");     // ellipse X radius (magnitude)
       el.style.setProperty("--ly", rand(9, 16).toFixed(1) + "px");     // ellipse Y radius (magnitude)
