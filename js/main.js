@@ -535,6 +535,18 @@
   const showreelMedia = showreel ? showreel.querySelector(".media-fill") : null;
   const showreelIframe = showreelMedia ? showreelMedia.querySelector("iframe") : null;
   const heroWords = heroText ? heroText.querySelectorAll(".word") : [];
+  let heroWordsSettled = false;
+  // pin every letter to its final visible state (inline > CSS transition, so it can't be lost)
+  function lockHeroWords() {
+    if (!heroText) return;
+    heroText.classList.add("in");
+    const letters = heroText.querySelectorAll(".word .w");
+    for (let i = 0; i < letters.length; i++) {
+      letters[i].style.opacity = "1";
+      letters[i].style.transform = "translateY(0)";
+      letters[i].style.transition = "none";
+    }
+  }
   const priceAmountEl = document.getElementById("priceAmount");
   const scrollHint = document.getElementById("scrollHint");
   const splitHint = document.getElementById("splitHint");
@@ -590,6 +602,9 @@
     heroText.style.top = titleTop + "%";
     heroText.style.opacity = textVis;
     heroText.style.transform = `translate(-50%, -50%) scale(${textScale})`;
+    // safety net: if we're back at the top and the entrance is long done, make sure the letters
+    // really are visible (a dropped compositor layer used to leave them stuck at opacity:0)
+    if (heroWordsSettled && p < 0.05) lockHeroWords();
 
     // showreel fades in, holds fullscreen 0.34–0.54 (STOP), then crossfades into the six reels
     const reelsIn = smoothstep(0.52, 0.58, p);
@@ -818,6 +833,15 @@
       const sf = document.getElementById("bg-shapes");
       if (sf) sf.classList.add("in");
     }));
+    // Once the entrance has finished, LOCK the words visible with inline styles and drop the
+    // layer promotion. The letters used to rely purely on a one-shot CSS transition, so if the
+    // compositor dropped/re-created the layer (Safari does this after long scrolls) they could
+    // stay invisible forever — that was the "title gone when I scroll back up" bug.
+    setTimeout(() => {
+      heroWordsSettled = true;
+      lockHeroWords();
+      heroText.style.willChange = "auto";
+    }, 2600);
 
     window.addEventListener("scroll", manageShowreel, { passive: true });
 
