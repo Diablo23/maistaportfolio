@@ -160,6 +160,9 @@
     w: lerp(A.w, B.w, t), h: lerp(A.h, B.h, t),
   });
   const applyRect = (el, r) => {
+    // skip non-finite values — writing "NaN%" makes the browser ignore the update and the
+    // element gets stuck at whatever it last rendered
+    if (!isFinite(r.l) || !isFinite(r.t) || !isFinite(r.w) || !isFinite(r.h)) return;
     el.style.left = r.l + "%"; el.style.top = r.t + "%";
     el.style.width = r.w + "%"; el.style.height = r.h + "%";
   };
@@ -542,7 +545,12 @@
   function render() {
     const rect = hero.getBoundingClientRect();
     const total = rect.height - window.innerHeight;
-    const p = clamp(-rect.top / total, 0, 1);
+    // If the denominator is 0/negative (a transient layout state — e.g. mid-resize, or the
+    // mobile URL bar changing the viewport), -rect.top/total is NaN/Infinity. Writing NaN into
+    // a style makes the browser IGNORE it and keep the previous value → the hero title stayed
+    // invisible and the showreel froze mid-animation. Fall back to the last good progress.
+    let p = total > 0 ? clamp(-rect.top / total, 0, 1) : (rect.top >= 0 ? 0 : 1);
+    if (!isFinite(p)) p = (lastP >= 0 && isFinite(lastP)) ? lastP : 0;
 
     // page-open fade-in: smooth & gentle. Video eases in first, text follows.
     // Once the user actually interacts, the entrance is "done" and never hides text again.
