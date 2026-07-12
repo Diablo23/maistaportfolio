@@ -668,7 +668,9 @@
     const range = document.createRange();
     range.selectNodeContents(l2);
     const tw = range.getBoundingClientRect().width || 1;
-    const target = window.innerWidth * (window.innerWidth < 760 ? 0.94 : 0.92);
+    // fit the (nowrap) line inside the box's CONTENT width — overflowing it is what made the
+    // title look shifted on phones
+    const target = (ht.clientWidth || window.innerWidth) * 0.98;
     const ratio = tw > target ? target / tw : 1;
     ht.style.setProperty("--tscale", ratio.toFixed(3));
   }
