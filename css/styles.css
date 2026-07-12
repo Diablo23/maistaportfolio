@@ -448,19 +448,29 @@ section{position:relative;z-index:1;pointer-events:none}
 }
 @media (max-width:767.98px){
   .plans{grid-template-columns:1fr;gap:1.25rem}
-  /* hero text: full width + hard-centred (88vw + nowrap made it sit off-centre on phones) */
-  .hero-text{width:100vw;left:0;transform:translate(0,-50%);padding:0 3vw;text-align:center}
-  .hero-line{width:100%;text-align:center}
+  /* wider box so the (nowrap, scaled) lines have room; JS owns the transform, so don't touch it */
+  .hero-text{width:100vw;padding:0 2vw}
 }
-/* phones: pricing cards are static — no hover lift/recolour, no tap highlight */
+/* touch devices: pricing cards are completely static — no hover lift, no recolour, no blur */
 @media (hover:none),(pointer:coarse){
-  .plan{cursor:default;-webkit-tap-highlight-color:transparent}
-  .plan:hover{transform:none;background:var(--dark);box-shadow:0 24px 60px -30px rgba(0,0,0,.55)}
-  .plan:hover .plan-title,.plan:hover .plan-desc,.plan:hover .plan-feats li,
-  .plan:hover .plan-price,.plan:hover .rate-label,.plan:hover .rate-amt{color:inherit}
-  .plan:hover .plan-feats,.plan:hover .plan-foot{border-top-color:rgba(255,255,255,.12)}
-  .plan:hover .plan-feats li::before{background:var(--orange)}
-  .plan:hover .plan-feats li::after{border-color:#fff}
+  .plan{cursor:default;-webkit-tap-highlight-color:transparent;transition:opacity .9s var(--ease),translate .9s var(--ease),filter .5s var(--ease)}
+  .plans:hover .plan:not(:hover){filter:none!important;opacity:1!important;transform:none!important}
+  .plan:hover,.plan:active,.plan:focus,.plan:focus-within{
+    z-index:1!important;transform:none!important;
+    background:linear-gradient(165deg,#2e2e2e 0%,#222 60%,#191919 100%)!important;
+    color:#fff!important;
+    box-shadow:0 40px 90px -45px rgba(0,0,0,.65),inset 0 1px 0 rgba(255,255,255,.06)!important;
+  }
+  .plan:hover .plan-title,.plan:active .plan-title{color:#fff!important}
+  .plan:hover .plan-desc,.plan:active .plan-desc{color:#b9b9b9!important}
+  .plan:hover .plan-feats li,.plan:active .plan-feats li{color:#e8e8e8!important}
+  .plan:hover .plan-feats li::before,.plan:active .plan-feats li::before{background:var(--orange)!important}
+  .plan:hover .plan-feats li::after,.plan:active .plan-feats li::after{border-color:#fff!important}
+  .plan:hover .plan-feats,.plan:hover .plan-foot,
+  .plan:active .plan-feats,.plan:active .plan-foot{border-top-color:rgba(255,255,255,.12)!important}
+  .plan:hover .plan-price,.plan:active .plan-price{color:var(--orange)!important}
+  .plan:hover .rate-label,.plan:active .rate-label{color:#9b9b9b!important}
+  .plan:hover .rate-amt,.plan:active .rate-amt{color:#fff!important}
 }
 
 /* blurred glow accents in the contributed section */
