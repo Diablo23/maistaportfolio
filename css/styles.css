@@ -435,11 +435,9 @@ section{position:relative;z-index:1;pointer-events:none}
   letter-spacing:0;margin-left:6px;
 }
 /* social-package dual rates */
-/* both rate rows share ONE grid on .plan-foot → labels line up, and each amount sits right
-   next to its label (the label column is only as wide as the longest label, no dead gap) */
-.plan-foot:has(.plan-rate){display:grid;grid-template-columns:max-content 1fr;
-  column-gap:.85rem;row-gap:.6rem;align-items:baseline}
-.plan-rate{display:contents}
+/* each amount sits right next to ITS OWN label (no shared column → no dead gap after the
+   short "ONE-TIME" label) */
+.plan-rate{display:flex;align-items:baseline;gap:.6rem;margin-top:.55rem;flex-wrap:wrap}
 .plan-rate:first-of-type{margin-top:0}
 /* label column: fixed width + no wrap, so both rows line up and the price never breaks */
 .rate-label{font-size:.7rem;letter-spacing:.03em;text-transform:uppercase;color:#9b9b9b;white-space:nowrap}
@@ -459,7 +457,7 @@ section{position:relative;z-index:1;pointer-events:none}
 }
 /* very narrow: stack the label above its price so neither can overflow */
 @media (max-width:26rem){
-  .plan-foot:has(.plan-rate){grid-template-columns:1fr;row-gap:.1rem}
+  .plan-rate{gap:.4rem}
   .plan-title{white-space:normal}      /* let it wrap rather than overflow the card */
 }
 /* touch devices: pricing cards are completely static — no hover lift, no recolour, no blur */
