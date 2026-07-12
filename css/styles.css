@@ -399,7 +399,8 @@ section{position:relative;z-index:1;pointer-events:none}
 .plan:hover .rate-amt{color:#241400}
 .plan-title{
   font-family:"Satoshi",sans-serif;font-weight:900;
-  font-size:clamp(1.375rem,2.4vw,1.875rem);letter-spacing:-.01em;color:#fff;margin-bottom:.875rem;
+  font-size:clamp(1.25rem,1.95vw,1.625rem);letter-spacing:-.01em;color:#fff;margin-bottom:.875rem;
+  white-space:nowrap;                                  /* all three titles sit on one line */
 }
 .plan-desc{font-size:clamp(.875rem,1.3vw,1rem);line-height:1.5;color:#c9c9c9;margin-bottom:1.375rem}
 .plan-feats{
@@ -434,13 +435,15 @@ section{position:relative;z-index:1;pointer-events:none}
   letter-spacing:0;margin-left:6px;
 }
 /* social-package dual rates */
-.plan-rate{display:flex;align-items:baseline;gap:10px;margin-top:10px}
+.plan-rate{display:flex;align-items:baseline;gap:.75rem;margin-top:.625rem}
 .plan-rate:first-of-type{margin-top:0}
-.rate-label{font-size:.75rem;letter-spacing:.04em;text-transform:uppercase;color:#9b9b9b}
-.rate-amt{font-family:"Satoshi",sans-serif;font-weight:900;font-size:clamp(1.25rem,2vw,1.625rem);color:#fff}
+/* label column: fixed width + no wrap, so both rows line up and the price never breaks */
+.rate-label{font-size:.7rem;letter-spacing:.03em;text-transform:uppercase;color:#9b9b9b;
+  white-space:nowrap;flex:0 0 auto;min-width:9.5rem}
+.rate-amt{font-family:"Satoshi",sans-serif;font-weight:900;font-size:clamp(1.25rem,1.8vw,1.5rem);color:#fff;white-space:nowrap}
 .rate-amt + em, .rate-amt ~ em{font-style:normal;color:#9b9b9b;font-size:13px;margin-left:4px}
 .plan-rate em{font-style:normal;color:#9b9b9b;font-size:13px;margin-left:4px}
-.plan-rate .plan-price{display:inline}
+.plan-rate .plan-price{display:inline;font-size:clamp(1.25rem,1.8vw,1.5rem);white-space:nowrap}
 .plans-note{
   width:100%;max-width:1320px;margin:1.75rem auto 0;
   font-family:"Satoshi",sans-serif;font-size:clamp(.875rem,1.3vw,1rem);color:var(--dark);
@@ -450,6 +453,14 @@ section{position:relative;z-index:1;pointer-events:none}
   .plans{grid-template-columns:1fr;gap:1.25rem}
   /* wider box so the (nowrap, scaled) lines have room; JS owns the transform, so don't touch it */
   .hero-text{width:100vw;padding:0 2vw}
+  /* single-column cards are wide → give the label its natural width */
+  .rate-label{min-width:10.5rem}
+}
+/* very narrow: stack the label above its price so neither can overflow */
+@media (max-width:26rem){
+  .plan-rate{flex-direction:column;align-items:flex-start;gap:.15rem}
+  .rate-label{min-width:0}
+  .plan-title{white-space:normal}      /* let it wrap rather than overflow the card */
 }
 /* touch devices: pricing cards are completely static — no hover lift, no recolour, no blur */
 @media (hover:none),(pointer:coarse){
