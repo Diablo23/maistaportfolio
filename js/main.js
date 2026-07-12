@@ -748,6 +748,30 @@
 
   function init() {
     const safe = (fn) => { try { fn(); } catch (e) { console.warn("init step failed:", e); } };
+    // Discord has no profile URL for usernames — clicking copies the handle instead
+    const dTab = document.getElementById("discordTab");
+    if (dTab) {
+      dTab.addEventListener("click", (e) => {
+        e.preventDefault();
+        const user = dTab.dataset.user || "";
+        const label = dTab.querySelector(".tab-label");
+        const done = () => {
+          if (!label || label.dataset.busy) return;
+          label.dataset.busy = "1";
+          const old = label.textContent;
+          label.textContent = "Copied!";
+          setTimeout(() => { label.textContent = old; delete label.dataset.busy; }, 1400);
+        };
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(user).then(done).catch(done);
+        } else {
+          const ta = document.createElement("textarea");
+          ta.value = user; document.body.appendChild(ta); ta.select();
+          try { document.execCommand("copy"); } catch (err) {}
+          ta.remove(); done();
+        }
+      });
+    }
     safe(buildReels);
     safe(sizeBaseIframes);
     safe(layoutReels);
