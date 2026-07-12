@@ -180,9 +180,10 @@
     const pageH = Math.max(document.documentElement.scrollHeight, window.innerHeight);
     field.style.height = pageH + "px";
     const screens = pageH / window.innerHeight;
-    const perScreen = window.innerWidth < 760 ? 10 : 15;        // lighter field (Retina-friendly)
-    const count = Math.min(150, Math.max(30, Math.round(screens * perScreen)));
-    const BASE = 105;                                           // "original" reference size
+    const isPhone = window.innerWidth < 760;
+    const perScreen = isPhone ? 22 : 15;                        // phone: more shapes, but small
+    const count = Math.min(200, Math.max(30, Math.round(screens * perScreen)));
+    const BASE = isPhone ? 42 : 105;                            // phone: ~2.5x smaller shapes
     const order = ["v-square", "v-circle", "v-diamond"];
     const fieldW = field.clientWidth || window.innerWidth;
     const placed = [];                                          // {cx,cy,r} for overlap checks
@@ -389,9 +390,10 @@
 
     const W = field.clientWidth || 1000;
     const H = field.clientHeight || 340;
-    const AREA = 100 * 100;    // every logo occupies the SAME visual area → they read as one size
-    const R = 92;              // uniform placement radius → even, roomier spacing
-    const pad = 6;
+    const phone = W < 760;
+    const AREA = phone ? 58 * 58 : 100 * 100;   // every logo occupies the SAME visual area
+    const R = phone ? 48 : 92;                  // uniform placement radius → even spacing
+    const pad = phone ? 4 : 6;
     const placed = [];         // {x,y} centres already taken
 
     // Best-candidate ("dart throwing") scatter: try several spots, keep the one FARTHEST
@@ -666,7 +668,7 @@
     const range = document.createRange();
     range.selectNodeContents(l2);
     const tw = range.getBoundingClientRect().width || 1;
-    const target = window.innerWidth * 0.92;               // ~full width, independent of the showreel
+    const target = window.innerWidth * (window.innerWidth < 760 ? 0.94 : 0.92);
     const ratio = tw > target ? target / tw : 1;
     ht.style.setProperty("--tscale", ratio.toFixed(3));
   }
